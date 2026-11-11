@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 말풍선 안의 P: 주차(P)한 뒤 건네는 한마디 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="@color/icon_foreground"
+        android:pathData="M38,30h32a10,10 0,0 1,10 10v22a10,10 0,0 1,-10 10H54l-11,9v-9h-5a10,10 0,0 1,-10 -10V40a10,10 0,0 1,10 -10z" />
+    <path
+        android:fillColor="@color/icon_background"
+        android:pathData="M47,38h9.5a8.5,8.5 0,0 1,0 17H52v9h-5zM52,43v7h4.5a3.5,3.5 0,0 0,0 -7z" />
+</vector>
