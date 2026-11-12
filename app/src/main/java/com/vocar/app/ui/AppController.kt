@@ -35,6 +35,7 @@ enum class Screen { ONBOARDING, HOME, LESSON, DONE }
 enum class Tab(val label: String) {
     TODAY("오늘"),
     LIBRARY("표현 보관함"),
+    DICTIONARY("경제 사전"),
     RECORD("내 기록"),
     SETTINGS("설정"),
 }
@@ -58,6 +59,21 @@ class AppController(
     var screen by mutableStateOf(Screen.HOME)
         private set
     var tab by mutableStateOf(Tab.TODAY)
+
+    /** 경제 사전에서 열려 있는 용어 id. null이면 목록을 보여 준다. */
+    var dictionaryTerm by mutableStateOf<String?>(null)
+
+    /** 이미 열려 있는 경제 사전 탭을 다시 누르면 목록으로 돌아간다. */
+    fun selectTab(target: Tab) {
+        if (target == Tab.DICTIONARY && tab == Tab.DICTIONARY) dictionaryTerm = null
+        tab = target
+    }
+
+    /** 오늘 화면의 카드나 관련 용어 칩에서 해당 용어 상세로 바로 간다. */
+    fun openTerm(id: String) {
+        dictionaryTerm = id
+        tab = Tab.DICTIONARY
+    }
     var mode by mutableStateOf(Mode.MORNING)
     var today by mutableStateOf(LocalDate.now().toEpochDay())
         private set
@@ -401,7 +417,10 @@ class AppController(
             closeDone()
             true
         }
-        Screen.HOME -> if (tab != Tab.TODAY) {
+        Screen.HOME -> if (tab == Tab.DICTIONARY && dictionaryTerm != null) {
+            dictionaryTerm = null
+            true
+        } else if (tab != Tab.TODAY) {
             tab = Tab.TODAY
             true
         } else false

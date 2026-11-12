@@ -187,7 +187,7 @@ private fun HomeScaffold(c: AppController, wide: Boolean) {
                 T("VOCAR", 22, weight = FontWeight.Black, modifier = Modifier.padding(start = 10.dp))
                 T("내리기 전 한마디", 12, color = p.textDim, modifier = Modifier.padding(start = 10.dp))
                 Spacer(Modifier.height(12.dp))
-                Tab.entries.forEach { NavItem(it, c.tab == it, Modifier.fillMaxWidth()) { c.tab = it } }
+                Tab.entries.forEach { NavItem(it, c.tab == it, Modifier.fillMaxWidth()) { c.selectTab(it) } }
                 Spacer(Modifier.weight(1f))
                 GateChip(c.gate.state)
             }
@@ -205,7 +205,7 @@ private fun HomeScaffold(c: AppController, wide: Boolean) {
                     .padding(5.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                Tab.entries.forEach { NavItem(it, c.tab == it, Modifier.weight(1f), centered = true) { c.tab = it } }
+                Tab.entries.forEach { NavItem(it, c.tab == it, Modifier.weight(1f), centered = true) { c.selectTab(it) } }
             }
         }
     }
@@ -243,6 +243,7 @@ private fun TabContent(c: AppController, wide: Boolean) {
     when (c.tab) {
         Tab.TODAY -> TodayScreen(c, wide)
         Tab.LIBRARY -> LibraryScreen(c, wide)
+        Tab.DICTIONARY -> DictionaryScreen(c, wide)
         Tab.RECORD -> RecordScreen(c, wide)
         Tab.SETTINGS -> SettingsScreen(c, wide)
     }
@@ -384,6 +385,7 @@ private fun TodayScreen(c: AppController, wide: Boolean) {
                     )
                 }
             }
+            TodayTermCard(c)
             WeekPanel(stats, Modifier.fillMaxWidth())
             TodayArrivals(c)
             ToggleRow(
