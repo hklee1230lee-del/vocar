@@ -126,7 +126,7 @@ private fun StreakPill(progress: EconProgress, today: Long) {
             .clip(RoundedCornerShape(50))
             .background(if (doneToday) p.retrySoft else p.tile)
             .padding(horizontal = 12.dp, vertical = 6.dp),
-    ) { T(text, 14, color = if (doneToday) p.retry else p.textDim, weight = FontWeight.Bold) }
+    ) { T(text, 14, color = if (doneToday) p.retry else p.textDim, weight = FontWeight.Bold, maxLines = 1) }
 }
 
 /** ⭐ 유저 레벨 꼬리표. 누르면 배지 도감 페이지로 바로 이동한다. */
@@ -140,7 +140,7 @@ private fun LevelPill(progress: EconProgress, onClick: (() -> Unit)? = null) {
         .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
         .padding(horizontal = 12.dp, vertical = 6.dp)
     Box(mod) {
-        T("⭐ Lv.${lv.level} ${lv.title} · ${lv.totalPoints}pt", 14, color = p.good, weight = FontWeight.Bold)
+        T("⭐ Lv.${lv.level} ${lv.title} · ${lv.totalPoints}pt", 14, color = p.good, weight = FontWeight.Bold, maxLines = 1)
     }
 }
 
@@ -185,14 +185,14 @@ private fun QuestView(c: AppController, wide: Boolean) {
         wide,
         leftWeight = 1.05f,
         left = {
+            T("${progress.dayNumber()}일차 · 오늘의 경제 상식 퀴즈", 15, color = p.textDim, maxLines = 1)
             Row(
-                Modifier.fillMaxWidth(),
+                Modifier.horizontalScroll(rememberScrollState()),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                T("${progress.dayNumber()}일차 · 오늘의 경제 상식 퀴즈", 15, color = p.textDim, modifier = Modifier.weight(1f))
-                LevelPill(progress) { c.openBadges() }
                 StreakPill(progress, c.today)
+                LevelPill(progress) { c.openBadges() }
             }
             QuestBar(qs.size, progress.picks.size, shown, Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -256,16 +256,13 @@ private fun QuestHint(c: AppController, progress: EconProgress, today: Long) {
     PackShelf(c)
 }
 
-/** 심화 퀴즈 팩 진열장(사회초년생 패키지 등 모든 팩 무료 오픈). */
+/** 심화 퀴즈 팩 진열장(사회초년생 패키지 등). */
 @Composable
 private fun PackShelf(c: AppController) {
     val p = LocalPalette.current
     val progress = c.econ
     Panel(Modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            T("심화 퀴즈 팩", 18, weight = FontWeight.Bold, modifier = Modifier.weight(1f))
-            Tag("전 과정 무료 오픈", on = true)
-        }
+        T("심화 퀴즈 팩", 18, weight = FontWeight.Bold)
         T("사회초년생 필수 금융부터 금리·기업 실전까지 원하는 팩을 골라 풀어 보세요.", 14, color = p.textDim)
         EconQuiz.packs.forEach { pack ->
             val solved = progress.packSolvedCount(pack)
@@ -284,10 +281,7 @@ private fun PackShelf(c: AppController) {
             ) {
                 T(pack.icon, 26)
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        T(pack.title, 16, weight = FontWeight.Bold)
-                        Tag("무료 심화 팩", on = done)
-                    }
+                    T(pack.title, 16, weight = FontWeight.Bold, maxLines = 1)
                     T(pack.subtitle, 13, color = p.textDim, maxLines = 1)
                 }
                 T(
@@ -363,7 +357,7 @@ private fun PackQuizView(c: AppController, pack: EconQuizPack, wide: Boolean) {
         right = {
             if (picked == null) {
                 HeroCard(Modifier.fillMaxWidth()) {
-                    T("${pack.icon} 무료 심화 퀴즈 팩", 15, color = p.onHeroDim)
+                    T("${pack.icon} 심화 퀴즈 팩", 15, color = p.onHeroDim)
                     T(pack.title, 24, color = p.onHero, weight = FontWeight.Bold)
                     T(pack.subtitle, 15, color = p.onHeroDim)
                     T("팩의 모든 문제를 맞히면 전용 가민 스타일 배지와 레벨 포인트를 획득해요!", 14, color = p.onHeroDim)
@@ -699,12 +693,11 @@ private fun FreezeShopCard(c: AppController, progress: EconProgress) {
             Tag("보유 ${progress.freezes} / ${maxFreezes}개", on = progress.freezes > 0)
         }
         T(
-            "모든 퀴즈·심화 팩(사회초년생 패키지 포함)·사전·배지 도감은 기능 잠금 없이 100% 무료예요. " +
-                "앱 내 결제는 바쁜 날 하루를 건너뛰어도 연속 기록을 지켜 주는 '연속 보호권 추가 구매'로만 운영합니다.",
+            "바쁜 날 하루를 건너뛰어도 다음 날 퀘스트를 끝내면 연속 기록이 이어져요.",
             14,
             color = p.textDim,
         )
-        T("· 7일 연속 달성마다 무료 1개 자동 지급 · 누적 추가 구매 ${progress.purchasedFreezes}회", 13, color = p.textDim)
+        T("· 7일 연속 달성마다 1개 자동 지급 · 누적 추가 구매 ${progress.purchasedFreezes}회", 13, color = p.textDim)
         if (!c.gate.parked) {
             GateChip(c.gate.state)
         } else {
@@ -731,7 +724,7 @@ internal fun TodayQuestCard(c: AppController) {
             T("오늘의 경제 상식 퀴즈", 17, weight = FontWeight.Bold, modifier = Modifier.weight(1f))
             if (progress.done) Tag("✓ 완료", on = true) else Tag("${progress.picks.size} / $total")
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             StreakPill(progress, c.today)
             LevelPill(progress) { c.openBadges() }
         }

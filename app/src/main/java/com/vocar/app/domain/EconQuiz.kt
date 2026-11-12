@@ -19,7 +19,7 @@ data class EconQuestion(
 }
 
 /**
- * 주제별 심화 퀴즈 팩. 결제로 막지 않고 누구나 무료로 풀어 볼 수 있다.
+ * 주제별 심화 퀴즈 팩. 결제로 막지 않고 누구나 풀어 볼 수 있다.
  */
 data class EconQuizPack(
     val id: String,
@@ -372,7 +372,7 @@ object EconQuiz {
  * - [picks]: 그날 문제 순서대로 고른 보기 번호(날이 바뀌면 비운다)
  * - [review]: 틀린 개념 id(최근 것이 앞). 날이 바뀌어도 남는다
  * - [streak]: 연속으로 퀘스트를 끝낸 날 수, [lastDone]: 마지막으로 끝낸 날
- * - [freezes]: 연속 보호권. 하루를 놓쳐도 다음 날 끝내면 연속이 이어진다(7일 연속마다 1개 무료 지급 + 추가 구매 가능)
+ * - [freezes]: 연속 보호권. 하루를 놓쳐도 다음 날 끝내면 연속이 이어진다(7일 연속마다 1개 지급 + 추가 구매 가능)
  * - [newBadges]: 방금 받은 새 배지 id(축하 표시용)
  * - [solvedPackQuestions]: 심화 퀴즈 팩에서 맞힌 문제 id 목록
  * - [seenTerms]: 경제 사전에서 열어 본 개념 id 목록
