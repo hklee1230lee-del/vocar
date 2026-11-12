@@ -81,4 +81,69 @@ class EconQuizTest {
         val p = EconProgress.empty(3)
         assertEquals(p, p.answer(7))
     }
+
+    /** 그날 문제를 모두 맞히거나(정답) 모두 틀리게(오답) 끝낸다. */
+    private fun finish(p: EconProgress, right: Boolean = true): EconProgress {
+        var cur = p
+        while (!cur.done) {
+            val q = cur.questions()[cur.picks.size]
+            cur = cur.answer(if (right) q.answer else (q.answer + 1) % 3)
+        }
+        return cur
+    }
+
+    @Test
+    fun `매일 끝내면 연속 기록이 늘고 누적 일차가 쌓인다`() {
+        var p = finish(EconProgress.empty(100))
+        assertEquals(1, p.streak)
+        p = finish(p.forDay(101))
+        p = finish(p.forDay(102))
+        assertEquals(3, p.streak)
+        assertEquals(3, p.totalDays)
+        assertEquals(3, p.currentStreak(102))
+        assertEquals(3, p.currentStreak(103)) // 아직 오늘 안 했어도 어제까지 이어졌으면 유지
+    }
+
+    @Test
+    fun `하루를 놓치면 연속이 끊기고 다시 1부터 시작한다`() {
+        var p = finish(EconProgress.empty(100))
+        p = finish(p.forDay(101))
+        assertEquals(0, p.currentStreak(104))
+        p = finish(p.forDay(104))
+        assertEquals(1, p.streak)
+        assertEquals(2, p.best)
+    }
+
+    @Test
+    fun `7일 연속이면 보호권을 받고 하루를 놓쳐도 이어진다`() {
+        var p = EconProgress.empty(0)
+        for (d in 0L until 7L) p = finish(p.forDay(d))
+        assertEquals(7, p.streak)
+        assertEquals(1, p.freezes)
+        // 7일째를 건너뛰고 8일째에 하면 보호권을 쓰고 이어진다
+        assertEquals(7, p.currentStreak(8))
+        p = finish(p.forDay(8))
+        assertEquals(8, p.streak)
+        assertEquals(0, p.freezes)
+    }
+
+    @Test
+    fun `배지는 처음 받을 때만 새 배지로 표시된다`() {
+        var p = finish(EconProgress.empty(0))
+        assertTrue("first" in p.newBadges)
+        assertTrue("perfect1" in p.newBadges)
+        p = finish(p.forDay(1))
+        assertFalse("first" in p.newBadges)
+        p = finish(p.forDay(2))
+        assertTrue("streak3" in p.newBadges)
+        assertTrue(p.forDay(3).newBadges.isEmpty())
+    }
+
+    @Test
+    fun `모두 틀리면 만점 배지는 없다`() {
+        val p = finish(EconProgress.empty(0), right = false)
+        assertFalse("perfect1" in p.newBadges)
+        assertEquals(0, p.perfectDays)
+        assertEquals(1, p.dayNumber())
+    }
 }

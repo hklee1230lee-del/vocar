@@ -40,17 +40,37 @@ class EconStore(private val file: File) {
 
     companion object {
         fun encode(p: EconProgress): String = JSONObject()
-            .put("v", 1)
+            .put("v", 2)
             .put("day", p.day)
             .put("picks", JSONArray(p.picks))
             .put("review", JSONArray(p.review))
+            .put("streak", p.streak)
+            .put("best", p.best)
+            .put("lastDone", p.lastDone)
+            .put("totalDays", p.totalDays)
+            .put("perfectDays", p.perfectDays)
+            .put("freezes", p.freezes)
+            .put("newBadges", JSONArray(p.newBadges))
             .toString()
 
         fun decode(text: String): EconProgress {
             val o = JSONObject(text)
             val picks = o.getJSONArray("picks").let { a -> (0 until a.length()).map { a.getInt(it) } }
             val review = o.getJSONArray("review").let { a -> (0 until a.length()).map { a.getString(it) } }
-            return EconProgress(o.getLong("day"), picks, review)
+            val badges = o.optJSONArray("newBadges")?.let { a -> (0 until a.length()).map { a.getString(it) } } ?: emptyList()
+            // v1 파일에는 연속 기록이 없으므로 기본값으로 읽는다.
+            return EconProgress(
+                day = o.getLong("day"),
+                picks = picks,
+                review = review,
+                streak = o.optInt("streak", 0),
+                best = o.optInt("best", 0),
+                lastDone = o.optLong("lastDone", EconProgress.NEVER),
+                totalDays = o.optInt("totalDays", 0),
+                perfectDays = o.optInt("perfectDays", 0),
+                freezes = o.optInt("freezes", 0),
+                newBadges = badges,
+            )
         }
     }
 }

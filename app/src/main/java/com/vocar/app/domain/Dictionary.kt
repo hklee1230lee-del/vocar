@@ -1,7 +1,11 @@
 package com.vocar.app.domain
 
 /** 해설·사전에 붙이는 그림의 종류. 그래프는 화면에서 직접 그리고, FLOW는 단계를 화살표로 잇는다. */
-enum class DiagramKind { SUPPLY_DEMAND, RATE_VS_BOND, BUSINESS_CYCLE, PURCHASING_POWER, FLOW }
+/**
+ * 해설·사전에 붙이는 그림의 종류. 그래프는 화면에서 직접 그리며 축 이름·곡선 이름·이동 화살표를 그림 안에 적는다.
+ * 수요·공급 그래프는 경제학 관례대로 세로축이 가격, 가로축이 수량이다. FLOW는 단계를 화살표로 잇는다.
+ */
+enum class DiagramKind { SUPPLY_DEMAND, SUPPLY_DOWN, DEMAND_UP, RATE_VS_BOND, BUSINESS_CYCLE, PURCHASING_POWER, FLOW }
 
 data class Diagram(
     val kind: DiagramKind,
@@ -19,7 +23,7 @@ object Diagrams {
     val RATE_VS_BOND = Diagram(
         DiagramKind.RATE_VS_BOND,
         "금리가 오르면 이미 나와 있던 채권의 가격은 내려가요. 둘은 시소처럼 반대로 움직여요.",
-        listOf("금리", "채권 가격"),
+        listOf("채권 가격", "금리"),
     )
     val BUSINESS_CYCLE = Diagram(
         DiagramKind.BUSINESS_CYCLE,
@@ -29,7 +33,17 @@ object Diagrams {
     val PURCHASING_POWER = Diagram(
         DiagramKind.PURCHASING_POWER,
         "물가가 오를수록 같은 돈으로 살 수 있는 양이 줄어들어요.",
-        listOf("물가", "살 수 있는 양"),
+        listOf("살 수 있는 양", "물가"),
+    )
+    val SUPPLY_DOWN = Diagram(
+        DiagramKind.SUPPLY_DOWN,
+        "공급이 줄면 공급 곡선이 왼쪽으로 옮겨 가요. 수요가 그대로면 만나는 점이 위로 올라가 가격이 올라요.",
+        listOf("수요", "공급(줄어든 뒤)", "새 균형"),
+    )
+    val DEMAND_UP = Diagram(
+        DiagramKind.DEMAND_UP,
+        "수요가 늘면 수요 곡선이 오른쪽으로 옮겨 가요. 공급이 그대로면 만나는 점이 위로 올라가 가격과 거래량이 함께 늘어요.",
+        listOf("수요(늘어난 뒤)", "공급", "새 균형"),
     )
     val RATE_HIKE_FLOW = Diagram(
         DiagramKind.FLOW,

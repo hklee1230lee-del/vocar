@@ -52,6 +52,7 @@ object EconQuiz {
             "사려는 사람은 그대로인데 물건이 갑자기 적어지면 가격은 어떻게 움직이기 쉬울까요?",
             listOf("오르기 쉽다", "내리기 쉽다", "전혀 변하지 않는다"), 0,
             "공급이 줄었는데 수요가 그대로면, 물건을 사려는 경쟁이 생겨 가격이 오르기 쉬워요.",
+            Diagrams.SUPPLY_DOWN,
         ),
         q(
             "q-weak-won", "exchange-rate",
@@ -166,6 +167,7 @@ object EconQuiz {
             "겨울이 되면 따뜻한 외투를 사려는 사람이 늘어요. 이것은 무엇이 늘어난 것일까요?",
             listOf("공급", "수요", "비용"), 1,
             "사려는 마음과 양이 수요예요. 수요가 늘면 같은 공급에서 가격이 오르기 쉬워요.",
+            Diagrams.DEMAND_UP,
         ),
         q(
             "q-monetary", "monetary-policy",
@@ -188,15 +190,27 @@ object EconQuiz {
 }
 
 /**
- * 오늘의 퀘스트 진행. [picks]는 그날 문제 순서대로 고른 보기 번호이고,
- * [review]는 틀린 개념 id(최근 것이 앞)로 날이 바뀌어도 남는다.
+ * 오늘의 퀘스트 진행과 매일 하는 습관 기록.
+ * - [picks]: 그날 문제 순서대로 고른 보기 번호(날이 바뀌면 비운다)
+ * - [review]: 틀린 개념 id(최근 것이 앞). 날이 바뀌어도 남는다
+ * - [streak]: 연속으로 퀘스트를 끝낸 날 수, [lastDone]: 마지막으로 끝낸 날
+ * - [freezes]: 연속 보호권. 하루를 놓쳐도 다음 날 끝내면 연속이 이어진다(7일 연속마다 1개, 최대 [MAX_FREEZES]개)
+ * - [newBadges]: 방금 끝낸 퀘스트로 새로 받은 배지 id(결과 화면 축하용)
  */
 data class EconProgress(
     val day: Long,
     val picks: List<Int>,
     val review: List<String>,
+    val streak: Int = 0,
+    val best: Int = 0,
+    val lastDone: Long = NEVER,
+    val totalDays: Int = 0,
+    val perfectDays: Int = 0,
+    val freezes: Int = 0,
+    val newBadges: List<String> = emptyList(),
 ) {
-    fun forDay(epochDay: Long): EconProgress = if (day == epochDay) this else copy(day = epochDay, picks = emptyList())
+    fun forDay(epochDay: Long): EconProgress =
+        if (day == epochDay) this else copy(day = epochDay, picks = emptyList(), newBadges = emptyList())
 
     fun questions(): List<EconQuestion> = EconQuiz.questsFor(day)
 
@@ -204,7 +218,17 @@ data class EconProgress(
 
     val correct: Int get() = questions().zip(picks).count { (q, p) -> q.answer == p }
 
-    /** 오늘 문제에 답한다. 이미 끝났거나 보기 번호가 틀리면 그대로 둔다. */
+    /** 지금 보여 줄 연속 일수. 어제까지 이어졌거나, 하루를 놓쳤어도 보호권이 있으면 아직 살아 있다. */
+    fun currentStreak(today: Long): Int = when {
+        lastDone == today || lastDone == today - 1 -> streak
+        lastDone == today - 2 && freezes > 0 -> streak
+        else -> 0
+    }
+
+    /** 오늘이 몇 번째 학습일인지(오늘 끝냈으면 그날 포함). */
+    fun dayNumber(): Int = if (done) totalDays else totalDays + 1
+
+    /** 오늘 문제에 답한다. 마지막 문제에 답하면 연속 기록과 배지를 갱신한다. */
     fun answer(choice: Int): EconProgress {
         if (done) return this
         val q = questions()[picks.size]
@@ -214,7 +238,29 @@ data class EconProgress(
         } else {
             (listOf(q.termId) + review.filter { it != q.termId }).take(MAX_REVIEW)
         }
-        return copy(picks = picks + choice, review = nextReview)
+        val next = copy(picks = picks + choice, review = nextReview)
+        return if (next.done) next.completeDay() else next
+    }
+
+    private fun completeDay(): EconProgress {
+        val usesFreeze = lastDone == day - 2 && freezes > 0
+        val nextStreak = when {
+            lastDone == day - 1 -> streak + 1
+            usesFreeze -> streak + 1
+            else -> 1
+        }
+        var nextFreezes = if (usesFreeze) freezes - 1 else freezes
+        if (nextStreak % 7 == 0) nextFreezes = minOf(nextFreezes + 1, MAX_FREEZES)
+        val after = copy(
+            streak = nextStreak,
+            best = maxOf(best, nextStreak),
+            lastDone = day,
+            totalDays = totalDays + 1,
+            perfectDays = perfectDays + if (correct == picks.size) 1 else 0,
+            freezes = nextFreezes,
+        )
+        val earnedBefore = EconBadges.earned(this).map { it.id }.toSet()
+        return after.copy(newBadges = EconBadges.earned(after).map { it.id }.filter { it !in earnedBefore })
     }
 
     /** 사전에서 다시 확인한 개념을 목록에서 뺀다. */
@@ -222,6 +268,32 @@ data class EconProgress(
 
     companion object {
         const val MAX_REVIEW = 20
+        const val MAX_FREEZES = 2
+        const val NEVER = -100L
         fun empty(epochDay: Long) = EconProgress(epochDay, emptyList(), emptyList())
     }
+}
+
+data class EconBadge(val id: String, val icon: String, val title: String, val detail: String, val earnedBy: (EconProgress) -> Boolean)
+
+/** 매일 하게 만드는 배지. 연속 기록은 가장 길었던 기록([EconProgress.best]) 기준이라 끊겨도 받은 배지는 남는다. */
+object EconBadges {
+    val all: List<EconBadge> = listOf(
+        EconBadge("first", "🌱", "첫 퀘스트", "오늘의 퀘스트를 처음 끝냈어요") { it.totalDays >= 1 },
+        EconBadge("streak3", "🔥", "3일 연속", "사흘 연속 퀘스트 완료") { it.best >= 3 },
+        EconBadge("streak7", "📅", "일주일 연속", "7일 연속 퀘스트 완료") { it.best >= 7 },
+        EconBadge("streak14", "💪", "2주 연속", "14일 연속 퀘스트 완료") { it.best >= 14 },
+        EconBadge("streak30", "🏆", "한 달 연속", "30일 연속 퀘스트 완료") { it.best >= 30 },
+        EconBadge("streak100", "👑", "100일 연속", "100일 연속 퀘스트 완료") { it.best >= 100 },
+        EconBadge("perfect1", "⭐", "첫 만점", "하루 3문제를 모두 맞혔어요") { it.perfectDays >= 1 },
+        EconBadge("perfect10", "🌟", "만점 10회", "만점을 10번 받았어요") { it.perfectDays >= 10 },
+        EconBadge("total30", "📚", "누적 30일", "모두 30일 동안 퀘스트 완료") { it.totalDays >= 30 },
+    )
+
+    fun earned(p: EconProgress): List<EconBadge> = all.filter { it.earnedBy(p) }
+
+    fun find(id: String): EconBadge? = all.firstOrNull { it.id == id }
+
+    /** 다음으로 노릴 연속 기록 목표(없으면 null). */
+    fun nextStreakGoal(current: Int): Int? = listOf(3, 7, 14, 30, 100).firstOrNull { it > current }
 }
