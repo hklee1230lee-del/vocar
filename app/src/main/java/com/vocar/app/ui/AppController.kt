@@ -8,6 +8,7 @@ import com.vocar.app.audio.VoiceState
 import com.vocar.app.data.EconStore
 import com.vocar.app.data.Store
 import com.vocar.app.domain.EconProgress
+import com.vocar.app.domain.EconQuiz
 import com.vocar.app.domain.ActivityKind
 import com.vocar.app.domain.AppData
 import com.vocar.app.domain.Choice
@@ -44,8 +45,12 @@ enum class Tab(val label: String) {
 
 enum class Phase { ASK, FEEDBACK }
 
-/** 경제 상식 탭 안의 두 화면 */
-enum class EconSection(val label: String) { QUEST("오늘의 퀘스트"), DICT("경제 사전") }
+/** 경제 상식 탭 안의 세 화면: 오늘의 퀘스트, 경제 사전, 배지 도감 */
+enum class EconSection(val label: String) {
+    QUEST("오늘의 퀘스트"),
+    DICT("경제 사전"),
+    BADGES("배지 도감"),
+}
 
 enum class PauseReason { GATE, AUDIO, BACKGROUND }
 
@@ -66,12 +71,19 @@ class AppController(
         private set
     var tab by mutableStateOf(Tab.TODAY)
 
-    // ── 경제 상식(오늘의 퀘스트 · 경제 사전) ──────────────────────
+    // ── 경제 상식(오늘의 퀘스트 · 경제 사전 · 배지 도감) ──────────────────────
 
     var econSection by mutableStateOf(EconSection.QUEST)
 
     /** 경제 사전에서 열려 있는 개념 id. null이면 목록을 보여 준다. */
     var dictionaryTerm by mutableStateOf<String?>(null)
+
+    /** 심화 퀴즈 팩에서 열려 있는 팩 id. null이면 기본 퀘스트 화면을 보여 준다. */
+    var activePackId by mutableStateOf<String?>(null)
+    var packQuestionIndex by mutableStateOf(0)
+        private set
+    var packPickedChoice by mutableStateOf<Int?>(null)
+        private set
 
     /** 오늘의 퀘스트 진행과 다시 볼 개념. 영어 학습 기록과 따로 저장한다. */
     var econ by mutableStateOf(econStore.load(LocalDate.now().toEpochDay()))
@@ -83,22 +95,75 @@ class AppController(
 
     /** 이미 열려 있는 탭을 다시 누르면 첫 화면(퀘스트 · 사전 목록)으로 돌아간다. */
     fun selectTab(target: Tab) {
-        if (target == Tab.DICTIONARY && tab == Tab.DICTIONARY) dictionaryTerm = null
+        if (target == Tab.DICTIONARY && tab == Tab.DICTIONARY) {
+            dictionaryTerm = null
+            activePackId = null
+        }
         tab = target
     }
 
-    /** 오늘 화면의 카드, 해설, 관련 개념 칩에서 해당 개념 상세로 바로 간다. 다시 볼 개념이면 확인한 것으로 친다. */
+    /** 오늘 화면의 카드, 해설, 관련 개념 칩에서 해당 개념 상세로 바로 간다. 열람 기록(seenTerms)을 남기고 다시 볼 개념이면 해제한다. */
     fun openTerm(id: String) {
         econSection = EconSection.DICT
         dictionaryTerm = id
+        activePackId = null
         tab = Tab.DICTIONARY
-        if (id in econ.review) saveEcon(econ.reviewed(id))
+        saveEcon(econ.reviewed(id))
     }
 
     fun openQuest() {
         econSection = EconSection.QUEST
         dictionaryTerm = null
+        activePackId = null
         tab = Tab.DICTIONARY
+    }
+
+    fun openBadges() {
+        econSection = EconSection.BADGES
+        dictionaryTerm = null
+        activePackId = null
+        tab = Tab.DICTIONARY
+    }
+
+    fun openPack(packId: String) {
+        econSection = EconSection.QUEST
+        dictionaryTerm = null
+        activePackId = packId
+        packQuestionIndex = 0
+        packPickedChoice = null
+        tab = Tab.DICTIONARY
+    }
+
+    fun closePack() {
+        activePackId = null
+        packQuestionIndex = 0
+        packPickedChoice = null
+    }
+
+    /** 심화 퀴즈 팩 문제에 답한다. 주차 중에만 받는다. */
+    fun answerPack(choice: Int) {
+        if (!gate.parked || packPickedChoice != null) return
+        val pack = activePackId?.let { EconQuiz.findPack(it) } ?: return
+        val q = pack.questions.getOrNull(packQuestionIndex) ?: return
+        if (choice !in q.choices.indices) return
+        packPickedChoice = choice
+        saveEcon(econ.answerPackQuestion(q, choice))
+    }
+
+    fun nextPackQuestion() {
+        val pack = activePackId?.let { EconQuiz.findPack(it) } ?: return
+        if (packQuestionIndex + 1 < pack.questions.size) {
+            packQuestionIndex += 1
+            packPickedChoice = null
+        } else {
+            closePack()
+        }
+    }
+
+    /** 앱 내 결제(연속 보호권 추가 구매): 기능 잠금 없이 보호권만 추가 구매한다. 주차 중에만 가능. */
+    fun buyFreeze() {
+        if (!gate.parked) return
+        saveEcon(econ.buyFreeze())
     }
 
     /** 오늘 문제에 답한다. 주차 중에만 받는다(운전 중 조작 방지). */
@@ -275,6 +340,9 @@ class AppController(
         econ = EconProgress.empty(today)
         questShown = 0
         dictionaryTerm = null
+        activePackId = null
+        packQuestionIndex = 0
+        packPickedChoice = null
         data = AppData.EMPTY
         saveFailed = false
         sessionId = null
@@ -475,6 +543,9 @@ class AppController(
         }
         Screen.HOME -> if (tab == Tab.DICTIONARY && dictionaryTerm != null) {
             dictionaryTerm = null
+            true
+        } else if (tab == Tab.DICTIONARY && activePackId != null) {
+            closePack()
             true
         } else if (tab != Tab.TODAY) {
             tab = Tab.TODAY

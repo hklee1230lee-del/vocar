@@ -1,5 +1,6 @@
 package com.vocar.app.domain
 
+import com.vocar.app.data.EconStore
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -145,5 +146,54 @@ class EconQuizTest {
         assertFalse("perfect1" in p.newBadges)
         assertEquals(0, p.perfectDays)
         assertEquals(1, p.dayNumber())
+    }
+
+    @Test
+    fun `심화 퀴즈 팩을 풀면 정복 목록과 전용 배지가 반영된다`() {
+        val starter = EconQuiz.findPack("pack-starter")
+        assertNotNull(starter)
+        assertEquals(3, EconQuiz.packs.size)
+        var p = EconProgress.empty(0)
+        starter!!.questions.forEach { q ->
+            p = p.answerPackQuestion(q, q.answer)
+        }
+        assertTrue(p.isPackCompleted(starter))
+        assertEquals(starter.questions.size, p.packSolvedCount(starter))
+        val earnedIds = EconBadges.earned(p).map { it.id }.toSet()
+        assertTrue("pack_first" in earnedIds)
+        assertTrue("pack_starter" in earnedIds)
+    }
+
+    @Test
+    fun `가민 스타일 배지 도감 30종과 유저 레벨이 정상 계산된다`() {
+        assertEquals(30, EconBadges.all.size)
+        assertEquals(30, EconBadges.all.map { it.id }.toSet().size)
+        val lv1 = EconBadges.levelInfo(EconProgress.empty(0))
+        assertEquals(1, lv1.level)
+        assertEquals(0, lv1.totalPoints)
+
+        var p = finish(EconProgress.empty(0))
+        EconQuiz.packs.flatMap { it.questions }.forEach { q ->
+            p = p.answerPackQuestion(q, q.answer)
+        }
+        val lvAfter = EconBadges.levelInfo(p)
+        assertTrue(lvAfter.totalPoints > 15)
+        assertTrue(lvAfter.level >= 3)
+    }
+
+    @Test
+    fun `연속 보호권 추가 구매는 최대 보유 한도까지 동작하고 저장소에서 복원된다`() {
+        var p = EconProgress.empty(5)
+        p = p.buyFreeze()
+        assertEquals(1, p.freezes)
+        assertEquals(1, p.purchasedFreezes)
+        assertTrue("freeze_keeper" in p.newBadges)
+
+        repeat(10) { p = p.buyFreeze() }
+        assertEquals(EconProgress.MAX_PURCHASED_FREEZES, p.freezes)
+
+        p = p.reviewed("inflation").answerPackQuestion(EconQuiz.packs.first().questions.first(), EconQuiz.packs.first().questions.first().answer)
+        val decoded = EconStore.decode(EconStore.encode(p))
+        assertEquals(p, decoded)
     }
 }

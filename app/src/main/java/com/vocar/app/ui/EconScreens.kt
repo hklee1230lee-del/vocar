@@ -46,13 +46,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vocar.app.domain.BadgeCategory
 import com.vocar.app.domain.Diagram
 import com.vocar.app.domain.DiagramKind
 import com.vocar.app.domain.Dictionary
+import com.vocar.app.domain.EconBadge
 import com.vocar.app.domain.EconBadges
 import com.vocar.app.domain.EconProgress
 import com.vocar.app.domain.EconQuestion
 import com.vocar.app.domain.EconQuiz
+import com.vocar.app.domain.EconQuizPack
 import com.vocar.app.domain.EconTerm
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -61,10 +64,13 @@ import kotlin.math.sin
 
 private const val TOPIC_ALL = "전체"
 private const val TOPIC_REVIEW = "다시 볼 개념"
+private const val BADGE_FILTER_ALL = "전체"
+private const val BADGE_FILTER_EARNED = "획득"
 
 /**
- * 경제 상식 탭: 오늘의 퀘스트(하루 3문제, 답하면 바로 해설)와 경제 사전(개념 · 쉬운 설명 · 그림).
- * 차 안이라 키보드와 검색창은 두지 않는다. 문제 풀기는 주차 중에만 된다.
+ * 경제 상식 탭: 오늘의 퀘스트(하루 3문제 + 심화 퀴즈 팩), 경제 사전(개념 · 쉬운 설명 · 그림),
+ * 그리고 Garmin 스타일 배지 도감(유저 레벨 · 30종 배지 수집 · 연속 보호권 추가 구매).
+ * 차 안이라 키보드와 검색창은 두지 않는다. 문제 풀기와 보호권 구매는 주차 중에만 된다.
  */
 @Composable
 internal fun EconScreen(c: AppController, wide: Boolean) {
@@ -77,24 +83,32 @@ internal fun EconScreen(c: AppController, wide: Boolean) {
         Segmented(
             EconSection.entries.map { it to it.label },
             c.econSection,
-            { c.econSection = it; c.dictionaryTerm = null },
+            {
+                c.econSection = it
+                c.dictionaryTerm = null
+                c.closePack()
+            },
             Modifier.fillMaxWidth(),
         )
         Box(Modifier.weight(1f).fillMaxWidth()) {
-            Appear(c.econSection to c.dictionaryTerm) {
+            Appear(Triple(c.econSection, c.dictionaryTerm, c.activePackId)) {
                 when (c.econSection) {
-                    EconSection.QUEST -> QuestView(c, wide)
+                    EconSection.QUEST -> {
+                        val pack = c.activePackId?.let { EconQuiz.findPack(it) }
+                        if (pack != null) PackQuizView(c, pack, wide) else QuestView(c, wide)
+                    }
                     EconSection.DICT -> {
                         val term = c.dictionaryTerm?.let { Dictionary.find(it) }
                         if (term != null) TermDetail(c, term, wide) else TermList(c, wide)
                     }
+                    EconSection.BADGES -> BadgeCodexView(c, wide)
                 }
             }
         }
     }
 }
 
-// ── 연속 기록 ────────────────────────────────────────────
+// ── 연속 기록 · 유저 레벨 꼬리표 ─────────────────────────────
 
 /** 🔥 연속 N일 꼬리표. 오늘 아직 안 했으면 회색으로 "오늘 하면 N+1일". */
 @Composable
@@ -113,6 +127,21 @@ private fun StreakPill(progress: EconProgress, today: Long) {
             .background(if (doneToday) p.retrySoft else p.tile)
             .padding(horizontal = 12.dp, vertical = 6.dp),
     ) { T(text, 14, color = if (doneToday) p.retry else p.textDim, weight = FontWeight.Bold) }
+}
+
+/** ⭐ 유저 레벨 꼬리표. 누르면 배지 도감 페이지로 바로 이동한다. */
+@Composable
+private fun LevelPill(progress: EconProgress, onClick: (() -> Unit)? = null) {
+    val p = LocalPalette.current
+    val lv = EconBadges.levelInfo(progress)
+    val mod = Modifier
+        .clip(RoundedCornerShape(50))
+        .background(p.accentSoft)
+        .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
+        .padding(horizontal = 12.dp, vertical = 6.dp)
+    Box(mod) {
+        T("⭐ Lv.${lv.level} ${lv.title} · ${lv.totalPoints}pt", 14, color = p.good, weight = FontWeight.Bold)
+    }
 }
 
 /** 같은 폭으로 나눈 진행 막대. 끝낸 칸은 초록, 지금 칸은 진하게, 남은 칸은 옅게. */
@@ -138,7 +167,7 @@ private fun QuestBar(total: Int, done: Int, current: Int, modifier: Modifier = M
     }
 }
 
-// ── 오늘의 퀘스트 ─────────────────────────────────────────
+// ── 오늘의 퀘스트 · 심화 퀴즈 팩 ──────────────────────────
 
 @Composable
 private fun QuestView(c: AppController, wide: Boolean) {
@@ -156,8 +185,13 @@ private fun QuestView(c: AppController, wide: Boolean) {
         wide,
         leftWeight = 1.05f,
         left = {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 T("${progress.dayNumber()}일차 · 오늘의 경제 상식 퀴즈", 15, color = p.textDim, modifier = Modifier.weight(1f))
+                LevelPill(progress) { c.openBadges() }
                 StreakPill(progress, c.today)
             }
             QuestBar(qs.size, progress.picks.size, shown, Modifier.fillMaxWidth())
@@ -199,7 +233,7 @@ private fun QuestView(c: AppController, wide: Boolean) {
         },
         right = {
             if (picked == null) {
-                QuestHint(progress, c.today)
+                QuestHint(c, progress, c.today)
             } else {
                 Explanation(q, picked)
             }
@@ -208,20 +242,137 @@ private fun QuestView(c: AppController, wide: Boolean) {
 }
 
 @Composable
-private fun QuestHint(progress: EconProgress, today: Long) {
+private fun QuestHint(c: AppController, progress: EconProgress, today: Long) {
     val p = LocalPalette.current
     val streak = progress.currentStreak(today)
     val goal = EconBadges.nextStreakGoal(streak)
+    val lv = EconBadges.levelInfo(progress)
     HeroCard(Modifier.fillMaxWidth()) {
-        T("하루 ${EconQuiz.PER_DAY}문제면 오늘 퀘스트 끝", 15, color = p.onHeroDim)
+        T("하루 ${EconQuiz.PER_DAY}문제면 오늘 퀘스트 끝 · ⭐ Lv.${lv.level} ${lv.title}", 15, color = p.onHeroDim)
         T(if (streak > 0) "🔥 ${streak}일째 이어 가는 중" else "🔥 오늘부터 연속 기록 시작", 24, color = p.onHero, weight = FontWeight.Bold)
         if (goal != null) T("${goal}일 연속이면 배지를 받아요 · ${goal - streak}일 남음", 14, color = p.onHeroDim)
-        if (progress.freezes > 0) T("🧊 연속 보호권 ${progress.freezes}개: 하루를 놓쳐도 연속이 이어져요", 14, color = p.onHeroDim)
+        T("🧊 연속 보호권 ${progress.freezes}개 보유 · 배지 도감에서 보호권 충전 가능", 14, color = p.onHeroDim)
     }
+    PackShelf(c)
+}
+
+/** 심화 퀴즈 팩 진열장(사회초년생 패키지 등 모든 팩 무료 오픈). */
+@Composable
+private fun PackShelf(c: AppController) {
+    val p = LocalPalette.current
+    val progress = c.econ
     Panel(Modifier.fillMaxWidth()) {
-        T("보기를 고르면 바로 해설과 그림이 나와요", 16, weight = FontWeight.SemiBold)
-        T("틀린 개념은 경제 사전의 '다시 볼 개념'에 모여요.", 14, color = p.textDim)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            T("심화 퀴즈 팩", 18, weight = FontWeight.Bold, modifier = Modifier.weight(1f))
+            Tag("전 과정 무료 오픈", on = true)
+        }
+        T("사회초년생 필수 금융부터 금리·기업 실전까지 원하는 팩을 골라 풀어 보세요.", 14, color = p.textDim)
+        EconQuiz.packs.forEach { pack ->
+            val solved = progress.packSolvedCount(pack)
+            val total = pack.questions.size
+            val done = solved >= total
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(if (done) p.accentSoft else p.tile)
+                    .border(1.dp, if (done) p.accentA else p.line, RoundedCornerShape(18.dp))
+                    .clickable(role = Role.Button) { c.openPack(pack.id) }
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                T(pack.icon, 26)
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        T(pack.title, 16, weight = FontWeight.Bold)
+                        Tag("무료 심화 팩", on = done)
+                    }
+                    T(pack.subtitle, 13, color = p.textDim, maxLines = 1)
+                }
+                T(
+                    if (done) "✓ $solved/$total 완료" else "$solved/$total 풀기 →",
+                    14,
+                    color = if (done) p.good else p.accentA,
+                    weight = FontWeight.Bold,
+                )
+            }
+        }
     }
+}
+
+/** 선택한 심화 퀴즈 팩의 문제를 푸는 화면. 주차 중에만 답할 수 있다. */
+@Composable
+private fun PackQuizView(c: AppController, pack: EconQuizPack, wide: Boolean) {
+    val p = LocalPalette.current
+    val progress = c.econ
+    val idx = c.packQuestionIndex.coerceIn(0, pack.questions.lastIndex)
+    val q = pack.questions[idx]
+    val picked = c.packPickedChoice
+    val solvedCount = progress.packSolvedCount(pack)
+    TwoPane(
+        wide,
+        leftWeight = 1.05f,
+        left = {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                BigButton("← 오늘의 퀘스트로", { c.closePack() }, kind = ButtonKind.SECONDARY, minHeight = 46, textSize = 14)
+                T("${pack.icon} ${pack.title}", 17, weight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                Tag("정복 $solvedCount / ${pack.questions.size}", on = solvedCount == pack.questions.size)
+            }
+            QuestBar(pack.questions.size, idx + if (picked != null) 1 else 0, idx, Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Tag("팩 문제 ${idx + 1} / ${pack.questions.size}")
+                q.term?.let { Tag(it.topic) }
+                if (q.id in progress.solvedPackQuestions) Tag("✓ 정복 완료", on = true)
+            }
+            T(q.prompt, 22, weight = FontWeight.Bold)
+            q.choices.forEachIndexed { i, text ->
+                ChoiceRow(
+                    text = text,
+                    state = when {
+                        picked == null -> ChoiceState.OPEN
+                        i == q.answer -> ChoiceState.CORRECT
+                        i == picked -> ChoiceState.WRONG
+                        else -> ChoiceState.DIM
+                    },
+                    enabled = picked == null && c.gate.parked,
+                    onClick = { c.answerPack(i) },
+                )
+            }
+            if (picked == null && !c.gate.parked) GateChip(c.gate.state)
+            if (picked != null) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    BigButton(
+                        if (idx == pack.questions.lastIndex) "팩 완료 · 돌아가기" else "다음 심화 문제 →",
+                        { c.nextPackQuestion() },
+                        Modifier.weight(1.4f),
+                        kind = ButtonKind.PRIMARY,
+                        minHeight = 60,
+                        textSize = 18,
+                    )
+                    q.term?.let { t ->
+                        BigButton("사전 보기", { c.openTerm(t.id) }, Modifier.weight(1f), kind = ButtonKind.SECONDARY, minHeight = 60, textSize = 16)
+                    }
+                }
+            }
+        },
+        right = {
+            if (picked == null) {
+                HeroCard(Modifier.fillMaxWidth()) {
+                    T("${pack.icon} 무료 심화 퀴즈 팩", 15, color = p.onHeroDim)
+                    T(pack.title, 24, color = p.onHero, weight = FontWeight.Bold)
+                    T(pack.subtitle, 15, color = p.onHeroDim)
+                    T("팩의 모든 문제를 맞히면 전용 가민 스타일 배지와 레벨 포인트를 획득해요!", 14, color = p.onHeroDim)
+                }
+            } else {
+                Explanation(q, picked)
+            }
+        },
+    )
 }
 
 private enum class ChoiceState { OPEN, CORRECT, WRONG, DIM }
@@ -285,11 +436,12 @@ private fun QuestResult(c: AppController, wide: Boolean) {
     val progress = c.econ
     val qs = progress.questions()
     val streak = progress.currentStreak(c.today)
+    val lv = EconBadges.levelInfo(progress)
     TwoPane(
         wide,
         left = {
             HeroCard(Modifier.fillMaxWidth()) {
-                T("${progress.totalDays}일차 퀘스트 완료", 15, color = p.onHeroDim)
+                T("${progress.totalDays}일차 퀘스트 완료 · ⭐ Lv.${lv.level} ${lv.title} (${lv.totalPoints}pt)", 15, color = p.onHeroDim)
                 T("🔥 연속 ${streak}일", 30, color = p.onHero, weight = FontWeight.Black)
                 T("${qs.size}문제 중 ${progress.correct}개 맞혔어요 · 내일 새 문제가 나와요", 15, color = p.onHeroDim)
                 EconBadges.nextStreakGoal(streak)?.let { goal ->
@@ -297,10 +449,10 @@ private fun QuestResult(c: AppController, wide: Boolean) {
                 }
             }
             if (progress.newBadges.isNotEmpty()) {
-                Panel(Modifier.fillMaxWidth(), color = p.accentSoft) {
-                    T("새 배지를 받았어요!", 18, weight = FontWeight.Bold, color = p.good)
+                Panel(Modifier.fillMaxWidth(), color = p.accentSoft, onClick = { c.openBadges() }) {
+                    T("새 배지를 받았어요! (눌러서 배지 도감 보기)", 18, weight = FontWeight.Bold, color = p.good)
                     progress.newBadges.mapNotNull { EconBadges.find(it) }.forEach { b ->
-                        T("${b.icon}  ${b.title} · ${b.detail}", 16, weight = FontWeight.SemiBold)
+                        T("${b.icon}  ${b.title} (+${b.points}pt) · ${b.detail}", 16, weight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -316,7 +468,8 @@ private fun QuestResult(c: AppController, wide: Boolean) {
             }
         },
         right = {
-            BadgeShelf(progress)
+            PackShelf(c)
+            BadgeShelfSummary(c, progress)
             Panel(Modifier.fillMaxWidth()) {
                 T("다시 볼 개념", 18, weight = FontWeight.SemiBold)
                 if (progress.review.isEmpty()) {
@@ -330,41 +483,245 @@ private fun QuestResult(c: AppController, wide: Boolean) {
     )
 }
 
-/** 배지 진열장. 받은 배지는 진하게, 아직인 배지는 흐리게 보여 다음 목표를 알려 준다. */
+/** 결과 화면의 배지 도감 요약 카드. 누르면 전용 배지 도감 페이지로 이동한다. */
 @Composable
-private fun BadgeShelf(progress: EconProgress) {
+private fun BadgeShelfSummary(c: AppController, progress: EconProgress) {
     val p = LocalPalette.current
-    val earned = EconBadges.earned(progress).map { it.id }.toSet()
-    Panel(Modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            T("배지", 18, weight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-            T("${earned.size} / ${EconBadges.all.size}", 14, color = p.textDim)
+    val earned = EconBadges.earned(progress)
+    val lv = EconBadges.levelInfo(progress)
+    Panel(Modifier.fillMaxWidth(), onClick = { c.openBadges() }) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            T("🏅 배지 도감 · Lv.${lv.level} ${lv.title}", 18, weight = FontWeight.Bold, modifier = Modifier.weight(1f))
+            Tag("${earned.size} / ${EconBadges.all.size} 수집 →", on = true)
         }
-        EconBadges.all.chunked(3).forEach { row ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                row.forEach { b ->
-                    val on = b.id in earned
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(18.dp))
-                            .background(if (on) p.card else p.tile)
-                            .border(1.dp, if (on) p.accentA else p.line, RoundedCornerShape(18.dp))
-                            .padding(vertical = 10.dp, horizontal = 6.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        T(if (on) b.icon else "🔒", 24)
-                        T(b.title, 13, color = if (on) p.text else p.textDim, weight = FontWeight.SemiBold, maxLines = 1)
-                    }
-                }
-                repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
-            }
-        }
-        if (progress.freezes > 0) T("🧊 연속 보호권 ${progress.freezes}개 (7일 연속마다 1개)", 14, color = p.textDim)
+        T("가민 스타일 배지 30종을 모으며 레벨을 올리고, 연속 보호권도 관리해 보세요.", 14, color = p.textDim)
     }
 }
 
-/** 오늘 화면의 "오늘의 경제 상식 퀴즈" 카드. 연속 기록을 함께 보여 주고, 누르면 퀘스트로 간다. */
+// ── 배지 도감 페이지 (Garmin 스타일 수집 도감 · 유저 레벨 · 연속 보호권 구매) ──
+
+@Composable
+private fun BadgeCodexView(c: AppController, wide: Boolean) {
+    val p = LocalPalette.current
+    val progress = c.econ
+    val earnedSet = remember(progress) { EconBadges.earned(progress).map { it.id }.toSet() }
+    val lv = remember(progress) { EconBadges.levelInfo(progress) }
+    var filter by remember { mutableStateOf(BADGE_FILTER_ALL) }
+    var selectedBadgeId by remember {
+        mutableStateOf(
+            progress.newBadges.firstOrNull()
+                ?: EconBadges.all.firstOrNull { it.id !in earnedSet }?.id
+                ?: EconBadges.all.first().id,
+        )
+    }
+    val selectedBadge: EconBadge = EconBadges.find(selectedBadgeId) ?: EconBadges.all.first()
+
+    val shownBadges = remember(filter, earnedSet) {
+        when (filter) {
+            BADGE_FILTER_ALL -> EconBadges.all
+            BADGE_FILTER_EARNED -> EconBadges.all.filter { it.id in earnedSet }
+            else -> EconBadges.all.filter { it.category.label == filter }
+        }
+    }
+
+    TwoPane(
+        wide,
+        leftWeight = 0.95f,
+        left = {
+            // 1. 유저 레벨 & 포인트 히어로 카드
+            HeroCard(Modifier.fillMaxWidth()) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    ProgressRing(
+                        fraction = lv.progressFraction,
+                        label = "Lv.${lv.level}",
+                        diameter = 86,
+                    )
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        T("유저 레벨 · 가민 스타일 배지 컬렉션 (${lv.totalPoints}pt)", 14, color = p.onHeroDim)
+                        T("Lv.${lv.level} ${lv.title}", 26, color = p.onHero, weight = FontWeight.Black)
+                        T(
+                            if (lv.pointsToNext > 0 && lv.nextLevelTarget != null) {
+                                "다음 레벨(${lv.nextLevelTarget}pt)까지 ${lv.pointsToNext}pt 남음 · 배지 ${earnedSet.size}/${EconBadges.all.size}개"
+                            } else {
+                                "최고 레벨 달성! · 배지 ${earnedSet.size}/${EconBadges.all.size}개 수집"
+                            },
+                            14,
+                            color = p.onHeroDim,
+                        )
+                    }
+                }
+            }
+
+            // 2. 선택한 배지 상세 카드
+            val isSelectedEarned = selectedBadge.id in earnedSet
+            Panel(
+                Modifier.fillMaxWidth(),
+                color = if (isSelectedEarned) p.accentSoft else p.card,
+            ) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Box(
+                        Modifier
+                            .size(56.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(if (isSelectedEarned) p.card else p.tile)
+                            .border(1.5.dp, if (isSelectedEarned) p.accentA else p.line, RoundedCornerShape(18.dp)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        T(selectedBadge.icon, 28)
+                    }
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Tag(selectedBadge.category.label, on = isSelectedEarned)
+                            Tag("+${selectedBadge.points} pt", on = isSelectedEarned)
+                            Tag(
+                                if (isSelectedEarned) "✓ 획득 완료" else "진행 중 · ${selectedBadge.progressText(progress)}",
+                                on = isSelectedEarned,
+                            )
+                        }
+                        T(selectedBadge.title, 20, weight = FontWeight.Bold)
+                        T(selectedBadge.detail, 15, color = p.textDim)
+                    }
+                }
+            }
+
+            // 3. 앱 내 결제: 연속 보호권 추가 구매 전용 카드 (기능 잠금 없음)
+            FreezeShopCard(c, progress)
+        },
+        right = {
+            // 카테고리 필터 칩
+            val filterOptions = remember(earnedSet.size) {
+                buildList {
+                    add(BADGE_FILTER_ALL to "전체 ${EconBadges.all.size}")
+                    add(BADGE_FILTER_EARNED to "획득 ${earnedSet.size}")
+                    BadgeCategory.entries.forEach { cat ->
+                        val count = EconBadges.all.count { it.category == cat }
+                        add(cat.label to "${cat.label} $count")
+                    }
+                }
+            }
+            Row(
+                Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                filterOptions.forEach { (key, label) ->
+                    val on = filter == key
+                    Box(
+                        Modifier
+                            .heightIn(min = 44.dp)
+                            .clip(RoundedCornerShape(50))
+                            .then(if (on) Modifier.background(p.accentBrush) else Modifier.background(p.tile))
+                            .clickable(role = Role.Tab) { filter = key }
+                            .padding(horizontal = 14.dp, vertical = 8.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        T(
+                            if (on) "✓ $label" else label,
+                            14,
+                            color = if (on) p.onAccent else p.textDim,
+                            weight = if (on) FontWeight.Bold else FontWeight.Normal,
+                        )
+                    }
+                }
+            }
+
+            // 3열 배지 도감 그리드
+            if (shownBadges.isEmpty()) {
+                Panel(Modifier.fillMaxWidth()) {
+                    T("아직 이 분류에서 획득한 배지가 없어요. 오늘의 퀘스트나 심화 팩에 도전해 보세요!", 16, color = p.textDim)
+                }
+            } else {
+                shownBadges.chunked(3).forEach { row ->
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        row.forEach { b ->
+                            val on = b.id in earnedSet
+                            val selected = b.id == selectedBadge.id
+                            Column(
+                                Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(if (on) p.card else p.tile)
+                                    .border(
+                                        width = if (selected) 2.dp else 1.dp,
+                                        color = when {
+                                            selected -> p.accentA
+                                            on -> p.good
+                                            else -> p.line
+                                        },
+                                        shape = RoundedCornerShape(20.dp),
+                                    )
+                                    .clickable(role = Role.Button) { selectedBadgeId = b.id }
+                                    .padding(vertical = 12.dp, horizontal = 8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                T(if (on) b.icon else "🔒 ${b.icon}", 22)
+                                T(
+                                    b.title,
+                                    14,
+                                    color = if (on) p.text else p.textDim,
+                                    weight = FontWeight.Bold,
+                                    maxLines = 1,
+                                )
+                                T(
+                                    if (on) "✓ +${b.points}pt" else "${b.progressText(progress)} · +${b.points}pt",
+                                    12,
+                                    color = if (on) p.good else p.textDim,
+                                    weight = if (on) FontWeight.SemiBold else FontWeight.Normal,
+                                    maxLines = 1,
+                                )
+                            }
+                        }
+                        repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                    }
+                }
+            }
+        },
+    )
+}
+
+/** 앱 내 결제 카드: 다른 학습·퀴즈 기능은 일절 막지 않고, 오직 연속 보호권 추가 구매만 제공한다. */
+@Composable
+private fun FreezeShopCard(c: AppController, progress: EconProgress) {
+    val p = LocalPalette.current
+    val maxFreezes = EconProgress.MAX_PURCHASED_FREEZES
+    val canBuy = progress.freezes < maxFreezes
+    Panel(Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            T("🧊 연속 보호권 스토어", 18, weight = FontWeight.Bold, modifier = Modifier.weight(1f))
+            Tag("보유 ${progress.freezes} / ${maxFreezes}개", on = progress.freezes > 0)
+        }
+        T(
+            "모든 퀴즈·심화 팩(사회초년생 패키지 포함)·사전·배지 도감은 기능 잠금 없이 100% 무료예요. " +
+                "앱 내 결제는 바쁜 날 하루를 건너뛰어도 연속 기록을 지켜 주는 '연속 보호권 추가 구매'로만 운영합니다.",
+            14,
+            color = p.textDim,
+        )
+        T("· 7일 연속 달성마다 무료 1개 자동 지급 · 누적 추가 구매 ${progress.purchasedFreezes}회", 13, color = p.textDim)
+        if (!c.gate.parked) {
+            GateChip(c.gate.state)
+        } else {
+            BigButton(
+                label = if (canBuy) "🧊 연속 보호권 1개 추가 구매 (보유 ${progress.freezes}/${maxFreezes})" else "✓ 연속 보호권이 최대(${maxFreezes}개)로 채워져 있어요",
+                onClick = { c.buyFreeze() },
+                modifier = Modifier.fillMaxWidth(),
+                kind = if (canBuy) ButtonKind.PRIMARY else ButtonKind.SECONDARY,
+                enabled = canBuy,
+                minHeight = 54,
+                textSize = 16,
+            )
+        }
+    }
+}
+
+/** 오늘 화면의 "오늘의 경제 상식 퀴즈" 카드. 연속 기록과 유저 레벨을 함께 보여 주고, 누르면 퀘스트로 간다. */
 @Composable
 internal fun TodayQuestCard(c: AppController) {
     val progress = c.econ
@@ -374,7 +731,10 @@ internal fun TodayQuestCard(c: AppController) {
             T("오늘의 경제 상식 퀴즈", 17, weight = FontWeight.Bold, modifier = Modifier.weight(1f))
             if (progress.done) Tag("✓ 완료", on = true) else Tag("${progress.picks.size} / $total")
         }
-        StreakPill(progress, c.today)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            StreakPill(progress, c.today)
+            LevelPill(progress) { c.openBadges() }
+        }
         QuestBar(total, progress.picks.size, if (progress.done) -1 else progress.picks.size, Modifier.fillMaxWidth())
     }
 }

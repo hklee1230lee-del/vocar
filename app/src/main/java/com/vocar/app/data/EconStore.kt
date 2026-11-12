@@ -40,7 +40,7 @@ class EconStore(private val file: File) {
 
     companion object {
         fun encode(p: EconProgress): String = JSONObject()
-            .put("v", 2)
+            .put("v", 3)
             .put("day", p.day)
             .put("picks", JSONArray(p.picks))
             .put("review", JSONArray(p.review))
@@ -51,6 +51,9 @@ class EconStore(private val file: File) {
             .put("perfectDays", p.perfectDays)
             .put("freezes", p.freezes)
             .put("newBadges", JSONArray(p.newBadges))
+            .put("solvedPackQuestions", JSONArray(p.solvedPackQuestions))
+            .put("seenTerms", JSONArray(p.seenTerms))
+            .put("purchasedFreezes", p.purchasedFreezes)
             .toString()
 
         fun decode(text: String): EconProgress {
@@ -58,7 +61,9 @@ class EconStore(private val file: File) {
             val picks = o.getJSONArray("picks").let { a -> (0 until a.length()).map { a.getInt(it) } }
             val review = o.getJSONArray("review").let { a -> (0 until a.length()).map { a.getString(it) } }
             val badges = o.optJSONArray("newBadges")?.let { a -> (0 until a.length()).map { a.getString(it) } } ?: emptyList()
-            // v1 파일에는 연속 기록이 없으므로 기본값으로 읽는다.
+            val solvedPacks = o.optJSONArray("solvedPackQuestions")?.let { a -> (0 until a.length()).map { a.getString(it) } } ?: emptyList()
+            val seenTerms = o.optJSONArray("seenTerms")?.let { a -> (0 until a.length()).map { a.getString(it) } } ?: emptyList()
+            // v1/v2 파일에는 새 필드가 없으므로 기본값으로 읽는다.
             return EconProgress(
                 day = o.getLong("day"),
                 picks = picks,
@@ -70,6 +75,9 @@ class EconStore(private val file: File) {
                 perfectDays = o.optInt("perfectDays", 0),
                 freezes = o.optInt("freezes", 0),
                 newBadges = badges,
+                solvedPackQuestions = solvedPacks,
+                seenTerms = seenTerms,
+                purchasedFreezes = o.optInt("purchasedFreezes", 0),
             )
         }
     }
