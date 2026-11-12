@@ -5,7 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.vocar.app.audio.Speaker
 import com.vocar.app.audio.VoiceState
+import com.vocar.app.data.EconStore
 import com.vocar.app.data.Store
+import com.vocar.app.domain.EconProgress
 import com.vocar.app.domain.ActivityKind
 import com.vocar.app.domain.AppData
 import com.vocar.app.domain.Choice
@@ -35,12 +37,15 @@ enum class Screen { ONBOARDING, HOME, LESSON, DONE }
 enum class Tab(val label: String) {
     TODAY("오늘"),
     LIBRARY("표현 보관함"),
-    DICTIONARY("경제 사전"),
+    DICTIONARY("경제 상식"),
     RECORD("내 기록"),
     SETTINGS("설정"),
 }
 
 enum class Phase { ASK, FEEDBACK }
+
+/** 경제 상식 탭 안의 두 화면 */
+enum class EconSection(val label: String) { QUEST("오늘의 퀘스트"), DICT("경제 사전") }
 
 enum class PauseReason { GATE, AUDIO, BACKGROUND }
 
@@ -53,6 +58,7 @@ class AppController(
     val gate: ParkingGate,
     val speaker: Speaker,
     private val trips: TripMonitor,
+    private val econStore: EconStore,
 ) {
     var data by mutableStateOf(AppData.EMPTY)
         private set
@@ -60,20 +66,65 @@ class AppController(
         private set
     var tab by mutableStateOf(Tab.TODAY)
 
-    /** 경제 사전에서 열려 있는 용어 id. null이면 목록을 보여 준다. */
+    // ── 경제 상식(오늘의 퀘스트 · 경제 사전) ──────────────────────
+
+    var econSection by mutableStateOf(EconSection.QUEST)
+
+    /** 경제 사전에서 열려 있는 개념 id. null이면 목록을 보여 준다. */
     var dictionaryTerm by mutableStateOf<String?>(null)
 
-    /** 이미 열려 있는 경제 사전 탭을 다시 누르면 목록으로 돌아간다. */
+    /** 오늘의 퀘스트 진행과 다시 볼 개념. 영어 학습 기록과 따로 저장한다. */
+    var econ by mutableStateOf(econStore.load(LocalDate.now().toEpochDay()))
+        private set
+
+    /** 퀘스트에서 지금 보여 주는 문제 순번. 답한 뒤 해설을 읽는 동안은 그대로다. 3이면 결과 화면. */
+    var questShown by mutableStateOf(econ.picks.size)
+        private set
+
+    /** 이미 열려 있는 탭을 다시 누르면 첫 화면(퀘스트 · 사전 목록)으로 돌아간다. */
     fun selectTab(target: Tab) {
         if (target == Tab.DICTIONARY && tab == Tab.DICTIONARY) dictionaryTerm = null
         tab = target
     }
 
-    /** 오늘 화면의 카드나 관련 용어 칩에서 해당 용어 상세로 바로 간다. */
+    /** 오늘 화면의 카드, 해설, 관련 개념 칩에서 해당 개념 상세로 바로 간다. 다시 볼 개념이면 확인한 것으로 친다. */
     fun openTerm(id: String) {
+        econSection = EconSection.DICT
         dictionaryTerm = id
         tab = Tab.DICTIONARY
+        if (id in econ.review) saveEcon(econ.reviewed(id))
     }
+
+    fun openQuest() {
+        econSection = EconSection.QUEST
+        dictionaryTerm = null
+        tab = Tab.DICTIONARY
+    }
+
+    /** 오늘 문제에 답한다. 주차 중에만 받는다(운전 중 조작 방지). */
+    fun answerQuest(choice: Int) {
+        if (!gate.parked || econ.done || questShown != econ.picks.size) return
+        saveEcon(econ.answer(choice))
+    }
+
+    fun nextQuest() {
+        if (questShown < econ.picks.size) questShown += 1
+    }
+
+    private fun saveEcon(next: EconProgress) {
+        econ = next
+        if (!econStore.save(next)) saveFailed = true
+    }
+
+    private fun refreshEconDay() {
+        val next = econ.forDay(today)
+        if (next != econ) {
+            econ = next
+            questShown = next.picks.size
+            econStore.save(next)
+        }
+    }
+
     var mode by mutableStateOf(Mode.MORNING)
     var today by mutableStateOf(LocalDate.now().toEpochDay())
         private set
@@ -142,6 +193,7 @@ class AppController(
 
     fun onForeground() {
         refreshDay()
+        refreshEconDay()
         if (screen == Screen.HOME && sessionId == null) mode = suggestedMode()
     }
 
@@ -219,6 +271,10 @@ class AppController(
     fun eraseEverything() {
         speaker.stop()
         store.clear()
+        econStore.clear()
+        econ = EconProgress.empty(today)
+        questShown = 0
+        dictionaryTerm = null
         data = AppData.EMPTY
         saveFailed = false
         sessionId = null

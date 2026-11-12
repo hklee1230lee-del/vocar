@@ -243,7 +243,7 @@ private fun TabContent(c: AppController, wide: Boolean) {
     when (c.tab) {
         Tab.TODAY -> TodayScreen(c, wide)
         Tab.LIBRARY -> LibraryScreen(c, wide)
-        Tab.DICTIONARY -> DictionaryScreen(c, wide)
+        Tab.DICTIONARY -> EconScreen(c, wide)
         Tab.RECORD -> RecordScreen(c, wide)
         Tab.SETTINGS -> SettingsScreen(c, wide)
     }
@@ -385,7 +385,7 @@ private fun TodayScreen(c: AppController, wide: Boolean) {
                     )
                 }
             }
-            TodayTermCard(c)
+            TodayQuestCard(c)
             WeekPanel(stats, Modifier.fillMaxWidth())
             TodayArrivals(c)
             ToggleRow(

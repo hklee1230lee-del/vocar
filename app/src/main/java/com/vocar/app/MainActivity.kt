@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.vocar.app.audio.Speaker
+import com.vocar.app.data.EconStore
 import com.vocar.app.data.Store
 import com.vocar.app.ui.AppController
 import com.vocar.app.ui.AppRoot
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
         gate = ParkingGate(this, onParked = { controller.onParked() }, onLeftParked = { controller.onGateLost() })
         speaker = Speaker(this) { controller.onAudioInterrupted() }
         trips = TripMonitor.get(this)
-        controller = AppController(Store(File(filesDir, "vocar.json")), gate, speaker, trips)
+        controller = AppController(Store(File(filesDir, "vocar.json")), gate, speaker, trips, EconStore(File(filesDir, "econ.json")))
         trips.attach { controller.onTripEnd(it) }
         setContent { AppRoot(controller) }
     }
