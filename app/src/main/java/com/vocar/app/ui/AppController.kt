@@ -1,24 +1,31 @@
-package com.arrivaltalk.app.ui
+package com.vocar.app.ui
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.arrivaltalk.app.audio.Speaker
-import com.arrivaltalk.app.audio.VoiceState
-import com.arrivaltalk.app.data.Store
-import com.arrivaltalk.app.domain.ActivityKind
-import com.arrivaltalk.app.domain.AppData
-import com.arrivaltalk.app.domain.Choice
-import com.arrivaltalk.app.domain.Engine
-import com.arrivaltalk.app.domain.Goal
-import com.arrivaltalk.app.domain.Level
-import com.arrivaltalk.app.domain.Mode
-import com.arrivaltalk.app.domain.Question
-import com.arrivaltalk.app.domain.Session
-import com.arrivaltalk.app.domain.SessionLength
-import com.arrivaltalk.app.domain.Settings
-import com.arrivaltalk.app.domain.Verdict
-import com.arrivaltalk.app.vehicle.ParkingGate
+import com.vocar.app.audio.Speaker
+import com.vocar.app.audio.VoiceState
+import com.vocar.app.data.Store
+import com.vocar.app.domain.ActivityKind
+import com.vocar.app.domain.AppData
+import com.vocar.app.domain.Choice
+import com.vocar.app.domain.Engine
+import com.vocar.app.domain.Goal
+import com.vocar.app.domain.Level
+import com.vocar.app.domain.Mode
+import com.vocar.app.domain.Question
+import com.vocar.app.domain.Session
+import com.vocar.app.domain.SessionLength
+import com.vocar.app.domain.Settings
+import com.vocar.app.domain.Verdict
+import com.vocar.app.domain.Arrival
+import com.vocar.app.domain.Arrivals
+import com.vocar.app.domain.Place
+import com.vocar.app.vehicle.ParkingGate
+import com.vocar.app.vehicle.TripEnd
+import com.vocar.app.vehicle.TripMonitor
+import java.time.Instant
+import java.time.ZoneId
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.random.Random
@@ -44,6 +51,7 @@ class AppController(
     private val store: Store,
     val gate: ParkingGate,
     val speaker: Speaker,
+    private val trips: TripMonitor,
 ) {
     var data by mutableStateOf(AppData.EMPTY)
         private set
@@ -88,9 +96,19 @@ class AppController(
     /** 무음으로 고른 경우뿐 아니라, 이 기기에서 음원을 낼 수 없는 경우도 글자로 진행한다. */
     val silent: Boolean get() = data.settings.silent || speaker.state == VoiceState.UNAVAILABLE
 
+    /** 방금 도착해 아직 확정하지 않은 출퇴근 도착(있으면 홈에서 안내한다). */
+    val pendingArrival: Arrival? get() = Arrivals.pending(data, clock)
+
+    /** 화면이 "방금"을 다시 계산하도록 앞으로 나올 때마다 갱신하는 현재 시각 */
+    private var clock by mutableStateOf(System.currentTimeMillis())
+
+    private fun suggestedMode(): Mode =
+        pendingArrival?.let { Arrivals.modeFor(Arrivals.placeOf(it)) }
+            ?: Engine.defaultMode(data, today, LocalTime.now().hour)
+
     init {
         data = store.load()
-        mode = Engine.defaultMode(data, today, LocalTime.now().hour)
+        mode = suggestedMode()
         screen = if (data.settings.onboarded) Screen.HOME else Screen.ONBOARDING
     }
 
@@ -101,15 +119,47 @@ class AppController(
 
     private fun refreshDay() {
         today = LocalDate.now().toEpochDay()
+        clock = System.currentTimeMillis()
     }
 
     // ── 앱 생명주기 ─────────────────────────────────────────
 
     fun onForeground() {
         refreshDay()
-        if (screen == Screen.HOME && sessionId == null) {
-            mode = Engine.defaultMode(data, today, LocalTime.now().hour)
-        }
+        if (screen == Screen.HOME && sessionId == null) mode = suggestedMode()
+    }
+
+    // ── 도착 감지 ──────────────────────────────────────────
+
+    /** 주차가 확인되면, 앱이 꺼져 있던 사이에 주행이 있었는지 확인한다. */
+    fun onParked() = trips.checkNow()
+
+    /** 주행이 끝난 시점을 기록하고, 출근/퇴근 추정에 맞춰 오늘 할 학습을 바꿔 제안한다. */
+    fun onTripEnd(trip: TripEnd) {
+        val local = Instant.ofEpochMilli(trip.atMs).atZone(ZoneId.systemDefault())
+        val before = data.arrivals.size
+        val next = Arrivals.record(
+            data,
+            id = "a" + trip.atMs.toString(36),
+            atMs = trip.atMs,
+            day = local.toLocalDate().toEpochDay(),
+            minuteOfDay = local.hour * 60 + local.minute,
+            odometerKm = trip.odometerKm,
+            tripKm = trip.tripKm,
+            tripMinutes = trip.tripMinutes,
+            approximate = trip.approximate,
+        )
+        if (next.arrivals.size == before) return
+        persist(next)
+        refreshDay()
+        if (screen == Screen.HOME && sessionId == null) mode = suggestedMode()
+    }
+
+    /** 안내가 틀렸을 때 사용자가 바로잡는다. 이 값은 다음 추정의 기준이 된다. */
+    fun confirmArrival(place: Place) {
+        val arrival = pendingArrival ?: return
+        persist(Arrivals.confirm(data, arrival.id, place))
+        Arrivals.modeFor(place)?.let { mode = it }
     }
 
     /** 다른 앱으로 전환·화면 꺼짐: 재생을 멈추고, 돌아와도 자동으로 이어가지 않는다. */
@@ -159,7 +209,7 @@ class AppController(
         finishedSessionId = null
         pause = null
         tab = Tab.TODAY
-        mode = Engine.defaultMode(data, today, LocalTime.now().hour)
+        mode = suggestedMode()
         screen = Screen.ONBOARDING
     }
 
@@ -172,7 +222,8 @@ class AppController(
         val id = "s" + now.toString(36) + Random.nextInt(100, 999)
         val (next, created) = Engine.startSession(data, mode, length, today, now, id)
         if (created == null) return
-        persist(next)
+        // 도착 직후 고른 모드는 그 도착이 출근이었는지 퇴근이었는지의 정답이 된다.
+        persist(Arrivals.confirmFromSession(next, mode, now))
         enter(created.id, 0)
     }
 
@@ -336,7 +387,7 @@ class AppController(
         finishedSessionId = null
         tab = goTo
         refreshDay()
-        mode = Engine.defaultMode(data, today, LocalTime.now().hour)
+        mode = suggestedMode()
         screen = Screen.HOME
     }
 

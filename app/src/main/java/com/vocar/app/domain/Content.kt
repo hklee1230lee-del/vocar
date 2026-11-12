@@ -1,4 +1,4 @@
-package com.arrivaltalk.app.domain
+package com.vocar.app.domain
 
 /**
  * 설치에 포함되는 4주 · 20개 학습 묶음 (v1).

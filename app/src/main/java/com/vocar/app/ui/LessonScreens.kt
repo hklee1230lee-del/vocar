@@ -1,4 +1,4 @@
-package com.arrivaltalk.app.ui
+package com.vocar.app.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,14 +28,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.arrivaltalk.app.domain.ActivityKind
-import com.arrivaltalk.app.domain.Choice
-import com.arrivaltalk.app.domain.Content
-import com.arrivaltalk.app.domain.Engine
-import com.arrivaltalk.app.domain.Mode
-import com.arrivaltalk.app.domain.Question
-import com.arrivaltalk.app.domain.Session
-import com.arrivaltalk.app.domain.SessionStatus
+import com.vocar.app.domain.ActivityKind
+import com.vocar.app.domain.Choice
+import com.vocar.app.domain.Content
+import com.vocar.app.domain.Engine
+import com.vocar.app.domain.Mode
+import com.vocar.app.domain.Question
+import com.vocar.app.domain.Session
+import com.vocar.app.domain.SessionStatus
 import kotlinx.coroutines.delay
 
 // ── UI-03 문제 · UI-04 말하기 · UI-05 피드백 · UI-07 일시정지 ─────────────
@@ -58,48 +60,62 @@ internal fun LessonScreen(c: AppController, wide: Boolean) {
     Column(
         Modifier
             .fillMaxSize()
-            .padding(horizontal = 28.dp, vertical = 20.dp),
+            .padding(horizontal = 24.dp, vertical = 18.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 StepDots(session.items.size, session.done, c.index)
                 T(
                     "${modeLabel(session.mode)} ${session.length.minutes}분 · ${c.index + 1}/${session.items.size}",
-                    14,
+                    13,
                     color = p.textDim,
                 )
             }
-            BigButton("끝내기", { c.finishNow() }, kind = ButtonKind.OUTLINE, minHeight = 52, textSize = 17)
+            BigButton("끝내기", { c.finishNow() }, kind = ButtonKind.SECONDARY, minHeight = 50, textSize = 16)
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(14.dp))
         Box(Modifier.weight(1f).fillMaxWidth()) {
-            when {
-                c.pause != null -> PausePanel(c, session)
-                c.phase == Phase.ASK -> AskBody(c, question, wide)
-                else -> FeedbackBody(c, session, question, wide)
+            // 문제가 바뀌거나 답을 확정할 때마다 내용이 아래에서 올라오며 바뀐다.
+            Appear(Triple(c.index, c.phase, c.pause)) {
+                when {
+                    c.pause != null -> PausePanel(c, session)
+                    c.phase == Phase.ASK -> AskBody(c, question, wide)
+                    else -> FeedbackBody(c, session, question, wide)
+                }
+            }
+        }
+    }
+}
+
+/** 검정 카드에 담은 오늘의 표현. 음원을 낼 수 있으면 재생 버튼과 파형을 함께 둔다. */
+@Composable
+private fun ExpressionHero(c: AppController, en: String?, ko: String?, audio: String?) {
+    val p = LocalPalette.current
+    HeroCard(Modifier.fillMaxWidth()) {
+        if (en != null) T(en, 30, color = p.onHero, weight = FontWeight.Bold)
+        if (ko != null) T(ko, 16, color = p.onHeroDim)
+        if (audio != null) {
+            if (en != null) Spacer(Modifier.height(4.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                val speaking = c.speaker.speaking
+                RoundButton(
+                    if (speaking) "■" else "▶",
+                    if (speaking) "멈추기" else "다시 듣기",
+                    { if (speaking) c.stopAudio() else c.listen(audio) },
+                )
+                Waveform(speaking, Modifier.weight(1f))
+                BigButton("천천히", { c.listen(audio, slow = true) }, kind = ButtonKind.SECONDARY, minHeight = 44, textSize = 14)
             }
         }
     }
 }
 
 @Composable
-private fun ExpressionBlock(en: String, ko: String, size: Int = 34) {
+private fun Instruction(text: String) {
     val p = LocalPalette.current
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        T(en, size, weight = FontWeight.SemiBold, serif = true)
-        T(ko, 18, color = p.textDim)
-    }
-}
-
-@Composable
-private fun AudioRow(c: AppController, text: String) {
-    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        BigButton(
-            if (c.speaker.speaking) "듣는 중…" else "다시 듣기",
-            { c.listen(text) },
-            kind = ButtonKind.SECONDARY, minHeight = 54, textSize = 17,
-        )
-        BigButton("천천히 듣기", { c.listen(text, slow = true) }, kind = ButtonKind.OUTLINE, minHeight = 54, textSize = 17)
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Box(Modifier.size(9.dp).clip(CircleShape).background(p.accentBrush))
+        T(text, 16, color = p.textDim, weight = FontWeight.SemiBold)
     }
 }
 
@@ -108,7 +124,7 @@ private fun AskBody(c: AppController, q: Question, wide: Boolean) {
     val p = LocalPalette.current
     val kind = q.item.kind
     val silent = c.silent
-    val audio = q.audioText
+    val audio = q.audioText?.takeIf { !silent }
     val shadow = kind == ActivityKind.SHADOW || kind == ActivityKind.SHADOW_RECAP
     val recall = kind == ActivityKind.RECALL
     val listen = kind == ActivityKind.LISTEN_MEANING
@@ -117,36 +133,34 @@ private fun AskBody(c: AppController, q: Question, wide: Boolean) {
         wide,
         leftWeight = 1.1f,
         left = {
-            T(q.instruction, 17, color = p.accent, weight = FontWeight.SemiBold)
-            T(q.prompt, if (shadow) 18 else 24, color = if (shadow) p.textDim else p.text, weight = FontWeight.Medium)
+            Instruction(q.instruction)
+            T(q.prompt, if (shadow) 18 else 24, color = if (shadow) p.textDim else p.text, weight = FontWeight.Bold)
             when {
-                shadow -> ExpressionBlock(q.answerEn, q.answerKo)
-                recall && c.revealed -> ExpressionBlock(q.answerEn, q.answerKo)
-                // 무음일 때 듣기 문제는 문장을 읽고 푼다. 듣기 평가로 기록하지 않는다.
-                listen && silent -> {
-                    T(q.answerEn, 30, weight = FontWeight.SemiBold, serif = true)
+                shadow -> ExpressionHero(c, q.answerEn, q.answerKo, audio)
+                recall && c.revealed -> ExpressionHero(c, q.answerEn, q.answerKo, audio)
+                // 듣기 문제: 소리가 나면 재생 카드만, 무음이면 문장을 글자로 보여준다(듣기 평가로 기록하지 않는다).
+                listen && !silent -> ExpressionHero(c, null, null, audio)
+                listen -> {
+                    ExpressionHero(c, q.answerEn, null, null)
                     T(
                         if (c.data.settings.silent) "무음이라 문장을 글자로 보여드려요." else "이 기기에서는 음원을 낼 수 없어 글자로 보여드려요.",
-                        14,
+                        13,
                         color = p.textDim,
                     )
                 }
             }
             if (c.hintShown && !(recall && c.revealed)) {
-                Panel(Modifier.fillMaxWidth(), color = p.surfaceHigh) {
-                    T(if (listen) "문장 · ${q.hint}" else if (recall) "힌트 · ${q.hint}" else q.hint, 17)
+                Panel(Modifier.fillMaxWidth()) {
+                    T(if (listen) "문장 · ${q.hint}" else if (recall) "힌트 · ${q.hint}" else q.hint, 16, weight = FontWeight.SemiBold)
                 }
             }
-            if (audio != null && !silent && (listen || shadow || (recall && c.revealed))) {
-                AudioRow(c, audio)
-            }
-            c.audioNote?.let { T(it, 14, color = p.retry) }
+            c.audioNote?.let { T(it, 13, color = p.retry) }
         },
         right = {
             when {
                 q.choices.isNotEmpty() -> {
-                    q.choices.forEach { choice ->
-                        ChoiceButton(choice, englishFont = !listen) { c.choose(choice) }
+                    Panel(Modifier.fillMaxWidth()) {
+                        q.choices.forEach { choice -> ChoiceButton(choice) { c.choose(choice) } }
                     }
                     val canHint = !c.hintShown && q.hint.isNotBlank() && !(listen && silent)
                     if (canHint) {
@@ -154,22 +168,22 @@ private fun AskBody(c: AppController, q: Question, wide: Boolean) {
                             if (listen) "문장 보기" else "힌트 보기",
                             { c.showHint() },
                             Modifier.fillMaxWidth(),
-                            kind = ButtonKind.OUTLINE, minHeight = 52, textSize = 17,
+                            kind = ButtonKind.OUTLINE, minHeight = 50, textSize = 16,
                         )
                     }
                 }
                 recall && !c.revealed -> {
-                    T("먼저 소리 내어 말해 본 뒤 눌러요.", 15, color = p.textDim)
-                    BigButton("정답 보기", { c.reveal() }, Modifier.fillMaxWidth(), minHeight = 76)
+                    T("먼저 소리 내어 말해 본 뒤 눌러요.", 14, color = p.textDim)
+                    BigButton("정답 보기", { c.reveal() }, Modifier.fillMaxWidth(), minHeight = 74)
                     if (!c.hintShown) {
-                        BigButton("힌트 보기", { c.showHint() }, Modifier.fillMaxWidth(), kind = ButtonKind.OUTLINE, minHeight = 52, textSize = 17)
+                        BigButton("힌트 보기", { c.showHint() }, Modifier.fillMaxWidth(), kind = ButtonKind.OUTLINE, minHeight = 50, textSize = 16)
                     }
                 }
                 recall -> {
-                    T("떠올린 말과 같았나요?", 15, color = p.textDim)
-                    BigButton("떠올렸어요", { c.selfCheck(true) }, Modifier.fillMaxWidth(), minHeight = 76)
-                    BigButton("아직 어려워요", { c.selfCheck(false) }, Modifier.fillMaxWidth(), kind = ButtonKind.SECONDARY, minHeight = 64)
-                    T("스스로 확인한 결과는 연습으로만 기록해요.", 14, color = p.textDim)
+                    T("떠올린 말과 같았나요?", 14, color = p.textDim)
+                    BigButton("떠올렸어요", { c.selfCheck(true) }, Modifier.fillMaxWidth(), minHeight = 74)
+                    BigButton("아직 어려워요", { c.selfCheck(false) }, Modifier.fillMaxWidth(), kind = ButtonKind.SECONDARY, minHeight = 62)
+                    T("스스로 확인한 결과는 연습으로만 기록해요.", 13, color = p.textDim)
                 }
                 else -> {
                     BigButton(
@@ -177,11 +191,11 @@ private fun AskBody(c: AppController, q: Question, wide: Boolean) {
                         { c.practiced() },
                         Modifier.fillMaxWidth(),
                         sub = "마이크를 쓰지 않아요 · 연습으로 기록",
-                        minHeight = 84,
+                        minHeight = 82,
                     )
                     T(
                         if (silent) "입 모양으로 따라 읽어도 좋아요." else "듣고 나서 한 번 소리 내어 말해 봐요.",
-                        15,
+                        14,
                         color = p.textDim,
                     )
                 }
@@ -190,22 +204,24 @@ private fun AskBody(c: AppController, q: Question, wide: Boolean) {
     )
 }
 
+/** 흰 카드 한 줄 + 왼쪽의 빈 동그라미. 누르면 바로 제출된다. */
 @Composable
-private fun ChoiceButton(choice: Choice, englishFont: Boolean, onClick: () -> Unit) {
+private fun ChoiceButton(choice: Choice, onClick: () -> Unit) {
     val p = LocalPalette.current
     val shape = RoundedCornerShape(20.dp)
-    Box(
+    Row(
         Modifier
             .fillMaxWidth()
-            .heightIn(min = 70.dp)
+            .heightIn(min = 66.dp)
             .clip(shape)
-            .background(p.surface)
-            .border(1.5.dp, p.line, shape)
+            .background(p.card)
             .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = 22.dp, vertical = 12.dp),
-        contentAlignment = Alignment.CenterStart,
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        T(choice.text, 20, weight = FontWeight.Medium, serif = englishFont)
+        Box(Modifier.size(20.dp).clip(CircleShape).border(2.dp, p.line, CircleShape))
+        T(choice.text, 19, weight = FontWeight.SemiBold)
     }
 }
 
@@ -225,36 +241,33 @@ private fun FeedbackBody(c: AppController, session: Session, q: Question, wide: 
         wide,
         leftWeight = 1.1f,
         left = {
-            Panel(Modifier.fillMaxWidth(), color = if (correct) p.goodSoft else p.retrySoft) {
-                T(
-                    if (correct) "✓ 맞았어요" else "↻ 다시 익힐 표현이에요",
-                    20,
-                    color = if (correct) p.good else p.retry,
-                    weight = FontWeight.Bold,
-                )
-                if (!correct && picked != null && picked.explain.isNotBlank()) T(picked.explain, 16)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (correct) {
+                    CheckDot(true, 34)
+                } else {
+                    Box(Modifier.size(34.dp).clip(CircleShape).background(p.retrySoft), contentAlignment = Alignment.Center) {
+                        T("↻", 18, color = p.retry, weight = FontWeight.Bold)
+                    }
+                }
+                T(if (correct) "맞았어요" else "다시 익힐 표현이에요", 24, weight = FontWeight.Bold)
             }
-            ExpressionBlock(q.answerEn, q.answerKo, size = 30)
-            T(q.note, 16, color = p.textDim)
-            if (!correct) T("다음 학습일에 한 번 더 나와요.", 14, color = p.textDim)
-            c.audioNote?.let { T(it, 14, color = p.retry) }
+            if (!correct && picked != null && picked.explain.isNotBlank()) {
+                Panel(Modifier.fillMaxWidth(), color = p.retrySoft) { T(picked.explain, 15, color = p.retry, weight = FontWeight.SemiBold) }
+            }
+            ExpressionHero(c, q.answerEn, q.answerKo, q.answerEn.takeIf { !c.silent })
+            T(q.note, 15, color = p.textDim)
+            if (!correct) T("다음 학습일에 한 번 더 나와요.", 13, color = p.textDim)
+            c.audioNote?.let { T(it, 13, color = p.retry) }
         },
         right = {
             BigButton(
                 if (last) "마무리" else "다음",
                 { c.next() },
                 Modifier.fillMaxWidth(),
+                kind = ButtonKind.DARK,
                 enabled = ready,
-                minHeight = 84,
+                minHeight = 82,
             )
-            if (!c.silent) {
-                BigButton(
-                    if (c.speaker.speaking) "듣는 중…" else "표현 듣기",
-                    { c.listen(q.answerEn) },
-                    Modifier.fillMaxWidth(),
-                    kind = ButtonKind.SECONDARY, minHeight = 60,
-                )
-            }
         },
     )
 }
@@ -272,15 +285,18 @@ private fun PausePanel(c: AppController, session: Session) {
                     PauseReason.AUDIO -> "다른 소리가 먼저 나와서 멈췄어요. 방해받은 문제는 기록하지 않았어요."
                     else -> "화면을 벗어나 있어서 멈췄어요."
                 },
-                17,
+                16,
             )
-            T(
-                if (session.done > 0) "활동 ${session.done}개는 이미 저장했어요." else "아직 저장한 활동은 없어요.",
-                15,
-                color = p.textDim,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                CheckDot(session.done > 0, 20)
+                T(
+                    if (session.done > 0) "활동 ${session.done}개는 이미 저장했어요." else "아직 저장한 활동은 없어요.",
+                    14,
+                    color = p.textDim,
+                )
+            }
             if (!parked) GateChip(c.gate.state)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 BigButton("이어하기", { c.continueLesson() }, Modifier.weight(1.3f), enabled = parked)
                 BigButton("여기서 마치기", { c.finishNow() }, Modifier.weight(1f), kind = ButtonKind.SECONDARY)
             }
@@ -308,35 +324,38 @@ internal fun DoneScreen(c: AppController, wide: Boolean) {
 
     TwoPane(
         wide,
-        Modifier.padding(horizontal = 30.dp, vertical = 24.dp),
+        Modifier.padding(horizontal = 26.dp, vertical = 22.dp),
         leftWeight = 1.2f,
         left = {
-            T(
-                when {
-                    !complete -> "여기까지 저장했어요"
-                    session.mode == Mode.EVENING -> "오늘 한마디를 다시 꺼냈어요"
-                    else -> "오늘 표현을 연습했어요"
-                },
-                30,
-                weight = FontWeight.Bold,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                CheckDot(true, 36)
+                T(
+                    when {
+                        !complete -> "여기까지 저장했어요"
+                        session.mode == Mode.EVENING -> "오늘 한마디를 다시 꺼냈어요"
+                        else -> "오늘 표현을 연습했어요"
+                    },
+                    28,
+                    weight = FontWeight.Bold,
+                )
+            }
             T(
                 if (complete) "활동 ${session.done}개를 모두 마쳤어요. 여기서 마칠게요."
                 else "활동 ${session.done}개를 저장했어요. 남은 활동은 다음에 이어할 수 있어요.",
-                17,
+                16,
                 color = p.textDim,
             )
             bundles.forEach { b ->
                 val m = c.data.mastery[b.id]
                 Panel(Modifier.fillMaxWidth()) {
-                    T(b.en, 24, weight = FontWeight.SemiBold, serif = true)
-                    T(b.ko, 16, color = p.textDim)
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                    T(b.en, 23, weight = FontWeight.Bold)
+                    T(b.ko, 15, color = p.textDim)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         if (m != null) StatusTag(m)
                         BigButton(
                             if (m?.favorite == true) "★ 보관함에 표시함" else "☆ 표현 보관",
                             { c.toggleFavorite(b.id) },
-                            kind = ButtonKind.OUTLINE, minHeight = 48, textSize = 16,
+                            kind = ButtonKind.SECONDARY, minHeight = 46, textSize = 15,
                         )
                     }
                 }
@@ -350,15 +369,15 @@ internal fun DoneScreen(c: AppController, wide: Boolean) {
                     firstEver -> "기록은 이 차량에만 저장돼요. 가입은 필요 없어요."
                     else -> "기록을 저장했어요."
                 },
-                14,
+                13,
                 color = p.textDim,
             )
-            BigButton("오늘은 여기까지", { c.closeDone() }, Modifier.fillMaxWidth(), minHeight = 84)
+            BigButton("오늘은 여기까지", { c.closeDone() }, Modifier.fillMaxWidth(), minHeight = 82)
             BigButton(
                 "표현 보관함 보기",
                 { c.closeDone(Tab.LIBRARY) },
                 Modifier.fillMaxWidth(),
-                kind = ButtonKind.OUTLINE, minHeight = 56, textSize = 17,
+                kind = ButtonKind.SECONDARY, minHeight = 54, textSize = 16,
             )
         },
     )

@@ -1,4 +1,4 @@
-# 도착한마디 (Arrival Talk)
+# VOCAR
 
 > 주차 후, 내리기 전 1~3분. 오늘 쓸 영어 표현 하나를 듣고, 말해 보고, 다시 떠올리는 Pleos Connect 차량용 학습 앱.
 
@@ -20,8 +20,32 @@ Pleos Connect v2.1.0 에뮬레이터(API 34) + Vehicle SDK 2.3.2 기준입니다
 | FR-10 주간 목표·기록 | 학습일 / 연습한 표현 / 회상 확인 / 다시 익힐 표현을 따로 표시 |
 | FR-11 창·주야간 | 창 크기에 맞춰 전체 비율 조정, 넓은 창 2단·좁은 창 1단, 주간·야간 색 |
 | FR-12 기록 관리 | 이 차량에만 저장, 설정에서 모두 지우기 |
+| 도착 감지 | 주행이 끝난 시점을 기록하고 출근/퇴근을 추정해 오늘 학습을 바꿔 제안 (아래 참고) |
 
 아직 넣지 않은 것: 음성 인식(STT) 평가(FR-06), 검수 음원 파일(지금은 기기 TTS), 분석 이벤트 전송(FR-13), 계정·동기화, Gleo 연동.
+
+## 출근·퇴근이 끝난 시점을 아는 방법
+
+Vehicle SDK 2.3.2의 읽기 API만 씁니다(권한은 `pleos.car.permission.CAR_DRIVE` 하나, 위치·내비 목적지는 쓰지 않음).
+
+| 알아내는 것 | 쓰는 API | 비고 |
+| --- | --- | --- |
+| 주행이 끝난 시각 | `Gear.registerGearSelection` — P가 아닌 기어 뒤에 P가 되는 순간 | 콜백 방식. 앱이 화면에 없어도 프로세스가 살아 있으면 받음 |
+| 놓친 주행 보완 | `Odometer.getCurrentDistanceDriven` (누적 km) | 앱이 주차 상태로 열릴 때 읽어, 지난 기록보다 0.3km 이상 늘었으면 도착으로 기록(시각은 앱을 연 시각) |
+| 이번 주행 거리·시간 | `Odometer.getTripCurrentDrivingDistance` (m), `getTripCurrentDrivingTime` (분) | 없으면 누적 거리 차이로 대신 |
+
+출근인지 퇴근인지는 `domain/Arrivals.kt`의 규칙으로 가립니다.
+
+1. 평소 출퇴근 거리와 비슷한가 (확정된 도착들의 주행 거리 중앙값 ±25%)
+2. 순서 — 오늘 회사 도착 뒤의 도착은 집, 집 다음 도착은 회사
+3. 시간 — 배운 도착 시각 ±2시간, 아직 없으면 11시 이전은 출근·16시 이후는 퇴근
+
+도착 뒤 45분 안에 사용자가 출근/퇴근 학습을 시작하면(또는 안내에서 바로잡으면) 그 값이 정답으로 저장되어 다음 추정에 쓰입니다.
+거리와 순서·시간이 모두 맞으면 "도착했어요", 아니면 "도착한 것 같아요(추정)"로 표시합니다. 좌표나 주소는 저장하지 않습니다.
+
+한계: 프로세스가 꺼져 있던 사이의 주행은 정확한 도착 시각을 알 수 없습니다(앱을 연 시각으로 기록).
+NaviHelper의 목적지 도착 이벤트나 FusedLocation을 쓰면 더 정확하지만, 별도 SDK·권한 승인과 내비 탑재 차량이 필요해 넣지 않았습니다.
+기어 조회 API는 SDK에서 deprecated(구글 `GEAR_SELECTION` 속성 권장)로 표시되어 있습니다.
 
 ## 빌드와 실행
 
@@ -49,19 +73,21 @@ java.home=C\:\\Program Files\\Android\\Android Studio\\jbr
 ## 코드 구조
 
 ```
-app/src/main/java/com/arrivaltalk/app/
+app/src/main/java/com/vocar/app/
   MainActivity.kt          화면 표시/이탈에 맞춰 게이트·음원을 켜고 끈다
   domain/Models.kt         묶음, 세션, 시도, 숙련 상태
   domain/Content.kt        4주 · 20개 학습 묶음 (CONTENT_VERSION)
   domain/Engine.kt         추천, 세션 구성, 채점 반영, 복습 간격, 난이도, 주간 기록 — 순수 함수
   data/Codec.kt, Store.kt  JSON 저장 형식, 임시 파일 → 이름 바꾸기 저장
   vehicle/ParkingGate.kt   CarUxRestrictions + 기어 P 확인 (주차 전용 게이트)
+  vehicle/TripMonitor.kt   기어·주행거리로 주행이 끝난 시점 감지
+  domain/Arrivals.kt       도착 기록, 출근/퇴근 추정 규칙
   audio/Speaker.kt         TTS 재생, 오디오 포커스 요청·상실 처리
   ui/AppController.kt      화면 상태, 저장 시점, 일시정지·재개
   ui/Kit.kt                색·글자·버튼 등 공통 요소
   ui/HomeScreens.kt        첫 안내, 오늘, 표현 보관함, 내 기록, 설정
   ui/LessonScreens.kt      문제, 말하기, 피드백, 일시정지, 완료
-app/src/test/              EngineTest(학습 규칙), CodecTest(저장·복구)
+app/src/test/              EngineTest(학습 규칙), ArrivalsTest(도착 추정), CodecTest(저장·복구)
 ```
 
 학습 규칙을 바꿀 때는 `Engine.kt`와 `EngineTest.kt`만 보면 됩니다. 문항을 고치면 `Content.CONTENT_VERSION`을 올립니다.

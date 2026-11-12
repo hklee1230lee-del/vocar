@@ -1,4 +1,4 @@
-package com.arrivaltalk.app.audio
+package com.vocar.app.audio
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -157,6 +157,6 @@ class Speaker(context: Context, private val onInterrupted: () -> Unit) {
     }
 
     private companion object {
-        const val TAG = "ArrivalTalk"
+        const val TAG = "Vocar"
     }
 }

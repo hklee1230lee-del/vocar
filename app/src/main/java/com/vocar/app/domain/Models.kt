@@ -1,4 +1,4 @@
-package com.arrivaltalk.app.domain
+package com.vocar.app.domain
 
 /** 출근 모드(회사 주차 후 · 준비)와 퇴근 모드(집 주차 후 · 회상). 시계가 아니라 사용자가 고른다. */
 enum class Mode { MORNING, EVENING }
@@ -162,6 +162,8 @@ data class AppData(
     val difficulty: Int,
     /** 마지막 난이도 조정 이후 채점된 문항 수 */
     val gradedSinceAdjust: Int,
+    /** 주행이 끝난 시점(도착) 기록. 차량 신호로 자동으로 쌓인다. */
+    val arrivals: List<Arrival> = emptyList(),
 ) {
     companion object {
         val EMPTY = AppData(Settings.DEFAULT, emptyMap(), emptyList(), emptyList(), 0, 0)
@@ -205,4 +207,32 @@ data class Stats(
     val needsWork: Int,
     val sessionsCompletedThisWeek: Int,
     val sessionsPartialThisWeek: Int,
+)
+
+/** 도착한 곳. 위치를 쓰지 않고 주행 거리·시각·순서로 추정한다. */
+enum class Place { WORK, HOME, OTHER }
+
+/**
+ * 주행이 끝난 시점 하나. 출근이 끝난 시점 = place가 WORK인 도착, 퇴근이 끝난 시점 = HOME인 도착.
+ * 좌표·주소는 저장하지 않는다.
+ */
+data class Arrival(
+    val id: String,
+    val atMs: Long,
+    val day: Long,
+    /** 도착 시각(그날 0시부터의 분) */
+    val minuteOfDay: Int,
+    /** 누적 주행거리(km). 차량이 주지 않으면 null */
+    val odometerKm: Float?,
+    /** 이번 주행 거리(km). 알 수 없으면 null */
+    val tripKm: Float?,
+    val tripMinutes: Int?,
+    val guess: Place,
+    /** 학습된 출퇴근 패턴과 맞아떨어져 확실하다고 볼 때 true */
+    val sure: Boolean,
+    val reason: String,
+    /** 사용자가 고르거나 학습을 시작해 확정한 값. 아직이면 null */
+    val confirmed: Place?,
+    /** 기어 변화를 직접 보지 못하고, 앱을 열었을 때 주행거리 변화로 알아챈 도착 */
+    val approximate: Boolean,
 )

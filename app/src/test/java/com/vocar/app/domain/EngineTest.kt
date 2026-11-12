@@ -1,4 +1,4 @@
-package com.arrivaltalk.app.domain
+package com.vocar.app.domain
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

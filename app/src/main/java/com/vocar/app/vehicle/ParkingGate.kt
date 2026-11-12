@@ -1,4 +1,4 @@
-package com.arrivaltalk.app.vehicle
+package com.vocar.app.vehicle
 
 import ai.pleos.playground.vehicle.Vehicle
 import ai.pleos.playground.vehicle.constant.control.VehicleGear
@@ -34,7 +34,11 @@ enum class GateState {
  * - 주차 여부: Pleos Vehicle SDK의 기어 조회. 속도 0이나 "제한 없음"만으로 주차라고 보지 않는다.
  * - 화면에 보이는 동안에만 확인하고(start/stop), 2초 넘게 갱신되지 않은 값은 버린다.
  */
-class ParkingGate(context: Context, private val onLeftParked: () -> Unit) {
+class ParkingGate(
+    context: Context,
+    private val onParked: () -> Unit,
+    private val onLeftParked: () -> Unit,
+) {
     var state by mutableStateOf(GateState.CHECKING)
         private set
 
@@ -157,6 +161,7 @@ class ParkingGate(context: Context, private val onLeftParked: () -> Unit) {
         Log.i(TAG, "gate ${state.name} -> ${next.name} (gear=$gearPark ux=$uxClear)")
         state = next
         if (wasParked) onLeftParked()
+        if (next == GateState.PARKED) onParked()
     }
 
     /** 화면이 보일 때 호출한다. 이전 값은 믿지 않고 처음부터 다시 확인한다. */
@@ -188,7 +193,7 @@ class ParkingGate(context: Context, private val onLeftParked: () -> Unit) {
     }
 
     private companion object {
-        const val TAG = "ArrivalTalk"
+        const val TAG = "Vocar"
         const val POLL_MS = 500L
         const val STALE_MS = 2000L
         const val SETTLE_MS = 3000L

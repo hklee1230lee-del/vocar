@@ -10,7 +10,7 @@ param(
 )
 
 $ErrorActionPreference = "Continue"
-$package = "com.arrivaltalk.app"
+$package = "com.vocar.app"
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 $out = Join-Path $root "build\run"
@@ -126,7 +126,7 @@ function Launch {
 }
 
 function Shot($name) {
-    $remote = "/data/local/tmp/arrival-talk-shot.png"
+    $remote = "/data/local/tmp/vocar-shot.png"
     Adb shell screencap -p $remote | Out-Null
     Adb pull $remote (Join-Path $out "$name.png") | Out-Null
 }
@@ -137,7 +137,7 @@ Start-Sleep -Seconds 5
 Shot "launch"
 $appPid = ((Adb shell pidof $package) -join "").Trim()
 if (-not $appPid) {
-    Adb logcat -d -t 400 "AndroidRuntime:E" "ArrivalTalk:V" "*:S" | Set-Content -Path (Join-Path $out "logcat.txt") -Encoding UTF8
+    Adb logcat -d -t 400 "AndroidRuntime:E" "Vocar:V" "*:S" | Set-Content -Path (Join-Path $out "logcat.txt") -Encoding UTF8
     Fail "The app is not running after launch. See build\run\logcat.txt"
 }
 Say "App is running (pid $appPid, user $user). Screenshot: build\run\launch.png"
@@ -149,7 +149,7 @@ if ($Smoke) {
     if (-not (Test-Path $stepsFile)) { Fail "Steps file not found: $stepsFile" }
 
     function Dump($allWindows) {
-        $remote = "/data/local/tmp/arrival-talk-ui.xml"
+        $remote = "/data/local/tmp/vocar-ui.xml"
         if ($allWindows) { Adb shell uiautomator dump --windows $remote | Out-Null }
         else { Adb shell uiautomator dump $remote | Out-Null }
         $local = Join-Path $out "ui.xml"
@@ -196,6 +196,7 @@ if ($Smoke) {
         $arg = if ($parts.Count -gt 1) { $parts[1].Trim() } else { "" }
         switch ($command) {
             "clear" { Adb shell pm clear --user $user $package | Out-Null; Say "clear data" }
+            "uninstall" { Adb uninstall $arg | Out-Null; Say "uninstall $arg" }
             "stop" { Adb shell am force-stop --user $user $package | Out-Null; Say "force-stop" }
             "launch" { Launch; Start-Sleep -Seconds 4; Say "launch" }
             "home" { Adb shell input keyevent KEYCODE_HOME | Out-Null; Start-Sleep -Seconds 2; Say "home key" }
@@ -234,7 +235,7 @@ if ($Smoke) {
     }
 }
 
-Adb logcat -d -t 600 "AndroidRuntime:E" "ArrivalTalk:V" "*:S" | Set-Content -Path (Join-Path $out "logcat.txt") -Encoding UTF8
+Adb logcat -d -t 600 "AndroidRuntime:E" "Vocar:V" "*:S" | Set-Content -Path (Join-Path $out "logcat.txt") -Encoding UTF8
 $crashed = Select-String -Path (Join-Path $out "logcat.txt") -SimpleMatch -Pattern "Process: $package" -Quiet
 if ($crashed) { Fail "The app crashed. See build\run\logcat.txt" }
 if ($failures -gt 0) { Fail "$failures walk-through step(s) did not match. See build\run\run.log" }

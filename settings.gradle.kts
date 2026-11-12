@@ -26,5 +26,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ArrivalTalk"
+rootProject.name = "VOCAR"
 include(":app")

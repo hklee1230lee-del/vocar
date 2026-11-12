@@ -1,6 +1,7 @@
 # 에뮬레이터 화면 점검 순서 (tools\smoke-test.bat 이 읽는다)
-#   clear | stop | launch | home | back | wait <ms> | night yes|no | shot <이름> | tap <글자> | expect <글자> | absent <글자>
+#   clear | uninstall <패키지> | stop | launch | home | back | wait <ms> | night yes|no | shot <이름> | tap <글자> | expect <글자> | absent <글자>
 # tap/expect 는 화면의 글자로 찾는다(완전 일치 우선, 없으면 포함). 기어는 P 상태여야 한다.
+# 첫 학습이 출근/퇴근 중 무엇으로 시작될지는 도착 추정(에뮬레이터 시각)에 따라 달라진다.
 
 # 1) 첫 실행 → 출근 3분 (새 표현 1개)
 clear
@@ -29,11 +30,12 @@ shot variation
 tap Could you speak more slowly?
 expect 맞았어요
 tap 마무리
-expect 오늘 표현을 연습했어요
+expect 모두 마쳤어요
 shot done
 tap 오늘은 여기까지
 expect 오늘 목표를 채웠어요
 shot today-goal-met
+expect 오늘 도착
 
 # 2) 보관함 · 기록 · 설정
 tap 표현 보관함
@@ -50,7 +52,7 @@ shot settings
 # 3) 퇴근 1분: 회상 → 중간에 끝내기 → 이어하기
 tap 오늘
 tap 퇴근 · 집 도착
-tap 1분만 하기
+tap 1분만
 expect 오늘 배운 표현, 기억나나요?
 shot evening-recall
 tap Could you say that again?
@@ -70,16 +72,9 @@ expect 오늘 한마디를 다시 꺼냈어요
 shot evening-done
 tap 오늘은 여기까지
 
-# 4) 다른 화면으로 나갔다 오면 멈춰 있고, 직접 눌러야 이어간다
+# 4) 같은 날 한 번 더 시작해도 새 표현으로 넘어가지 않는다
 tap 출근 · 회사 도착
 tap 3분 시작
-expect 듣고 뜻을 골라요
-home
-launch
-expect 잠시 멈췄어요
-shot paused
-wait 1500
-tap 이어하기
 expect 듣고 뜻을 골라요
 
 # 5) 답 하나를 저장한 뒤 앱이 강제 종료돼도 기록이 남고 이어할 수 있다

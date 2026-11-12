@@ -1,18 +1,20 @@
-package com.arrivaltalk.app.data
+package com.vocar.app.data
 
-import com.arrivaltalk.app.domain.ActivityKind
-import com.arrivaltalk.app.domain.AppData
-import com.arrivaltalk.app.domain.Attempt
-import com.arrivaltalk.app.domain.Goal
-import com.arrivaltalk.app.domain.Level
-import com.arrivaltalk.app.domain.Mastery
-import com.arrivaltalk.app.domain.Mode
-import com.arrivaltalk.app.domain.Session
-import com.arrivaltalk.app.domain.SessionItem
-import com.arrivaltalk.app.domain.SessionLength
-import com.arrivaltalk.app.domain.SessionStatus
-import com.arrivaltalk.app.domain.Settings
-import com.arrivaltalk.app.domain.Verdict
+import com.vocar.app.domain.ActivityKind
+import com.vocar.app.domain.AppData
+import com.vocar.app.domain.Arrival
+import com.vocar.app.domain.Place
+import com.vocar.app.domain.Attempt
+import com.vocar.app.domain.Goal
+import com.vocar.app.domain.Level
+import com.vocar.app.domain.Mastery
+import com.vocar.app.domain.Mode
+import com.vocar.app.domain.Session
+import com.vocar.app.domain.SessionItem
+import com.vocar.app.domain.SessionLength
+import com.vocar.app.domain.SessionStatus
+import com.vocar.app.domain.Settings
+import com.vocar.app.domain.Verdict
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -30,6 +32,7 @@ object Codec {
         root.put("mastery", JSONArray(data.mastery.values.map(::mastery)))
         root.put("attempts", JSONArray(data.attempts.map(::attempt)))
         root.put("sessions", JSONArray(data.sessions.map(::session)))
+        root.put("arrivals", JSONArray(data.arrivals.map(::arrival)))
         root.put("difficulty", data.difficulty)
         root.put("gradedSinceAdjust", data.gradedSinceAdjust)
         return root.toString()
@@ -45,6 +48,7 @@ object Codec {
             sessions = list(root.optJSONArray("sessions"), ::readSession),
             difficulty = root.optInt("difficulty", 0),
             gradedSinceAdjust = root.optInt("gradedSinceAdjust", 0),
+            arrivals = list(root.optJSONArray("arrivals"), ::readArrival),
         )
     }
 
@@ -180,6 +184,38 @@ object Codec {
             variationChoices = o.optInt("variationChoices", 2),
         )
     }
+
+    private fun arrival(a: Arrival): JSONObject {
+        val o = JSONObject()
+            .put("id", a.id)
+            .put("atMs", a.atMs)
+            .put("day", a.day)
+            .put("minuteOfDay", a.minuteOfDay)
+            .put("guess", a.guess.name)
+            .put("sure", a.sure)
+            .put("reason", a.reason)
+            .put("approximate", a.approximate)
+        if (a.odometerKm != null) o.put("odometerKm", a.odometerKm.toDouble())
+        if (a.tripKm != null) o.put("tripKm", a.tripKm.toDouble())
+        if (a.tripMinutes != null) o.put("tripMinutes", a.tripMinutes)
+        if (a.confirmed != null) o.put("confirmed", a.confirmed.name)
+        return o
+    }
+
+    private fun readArrival(o: JSONObject) = Arrival(
+        id = o.getString("id"),
+        atMs = o.getLong("atMs"),
+        day = o.getLong("day"),
+        minuteOfDay = o.getInt("minuteOfDay"),
+        odometerKm = if (o.has("odometerKm")) o.getDouble("odometerKm").toFloat() else null,
+        tripKm = if (o.has("tripKm")) o.getDouble("tripKm").toFloat() else null,
+        tripMinutes = if (o.has("tripMinutes")) o.getInt("tripMinutes") else null,
+        guess = Place.valueOf(o.getString("guess")),
+        sure = o.optBoolean("sure", false),
+        reason = o.optString("reason"),
+        confirmed = if (o.has("confirmed")) Place.valueOf(o.getString("confirmed")) else null,
+        approximate = o.optBoolean("approximate", false),
+    )
 
     private fun enumOr(name: String, fallback: Goal): Goal = Goal.entries.firstOrNull { it.name == name } ?: fallback
     private fun enumOr(name: String, fallback: Level): Level = Level.entries.firstOrNull { it.name == name } ?: fallback

@@ -1,11 +1,12 @@
-package com.arrivaltalk.app.data
+package com.vocar.app.data
 
-import com.arrivaltalk.app.domain.AppData
-import com.arrivaltalk.app.domain.Engine
-import com.arrivaltalk.app.domain.Goal
-import com.arrivaltalk.app.domain.Mode
-import com.arrivaltalk.app.domain.SessionLength
-import com.arrivaltalk.app.domain.Verdict
+import com.vocar.app.domain.AppData
+import com.vocar.app.domain.Arrivals
+import com.vocar.app.domain.Engine
+import com.vocar.app.domain.Goal
+import com.vocar.app.domain.Mode
+import com.vocar.app.domain.SessionLength
+import com.vocar.app.domain.Verdict
 import java.io.File
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -24,6 +25,9 @@ class CodecTest {
             data = Engine.answer(data, "a", verdict, i == 2, true, 100, 1001L + i)
         }
         data = Engine.finishEarly(data, "a", 2000)
+        data = Arrivals.record(data, "a1", 8_640_000_000L, 100, 520, 1012.4f, 12.3f, 25, false)
+        data = Arrivals.confirmFromSession(data, Mode.MORNING, 8_640_060_000L)
+        data = Arrivals.record(data, "a2", 8_680_000_000L, 100, 1130, null, null, null, false)
         return Engine.toggleFavorite(data, "w1d1")
     }
 
@@ -42,11 +46,12 @@ class CodecTest {
         assertEquals(2, restored.attempts.size)
         assertEquals(1, restored.sessions.size)
         assertEquals(1, restored.mastery.size)
+        assertEquals(2, restored.arrivals.size)
     }
 
     @Test
     fun store_survives_restart_and_keeps_a_broken_file_aside() {
-        val dir = File(System.getProperty("java.io.tmpdir"), "arrival-talk-test-${System.nanoTime()}").apply { mkdirs() }
+        val dir = File(System.getProperty("java.io.tmpdir"), "vocar-test-${System.nanoTime()}").apply { mkdirs() }
         try {
             val file = File(dir, "state.json")
             val data = sample()

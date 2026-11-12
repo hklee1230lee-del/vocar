@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ArrivalTalk">
+        android:theme="@style/Theme.Vocar">
         <uses-library
             android:name="android.car"
             android:required="false" />

@@ -6,13 +6,13 @@ plugins {
 android {
     // Pleos Connect 이미지는 android.car 클래스를 부트 클래스 경로로 제공한다.
     useLibrary("android.car", false)
-    namespace = "com.arrivaltalk.app"
+    namespace = "com.vocar.app"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.arrivaltalk.app"
+        applicationId = "com.vocar.app"
         minSdk = 28
         targetSdk = 37
         versionCode = 1

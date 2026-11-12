@@ -1,4 +1,4 @@
-package com.arrivaltalk.app.domain
+package com.vocar.app.domain
 
 import kotlin.random.Random
 

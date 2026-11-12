@@ -1,6 +1,6 @@
-package com.arrivaltalk.app.data
+package com.vocar.app.data
 
-import com.arrivaltalk.app.domain.AppData
+import com.vocar.app.domain.AppData
 import java.io.File
 
 /**
