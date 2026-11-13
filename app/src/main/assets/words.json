@@ -1,0 +1,4092 @@
+[
+  {
+    "level": 0,
+    "text": "今日",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "きょう",
+        "text": "今日"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "오늘"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "明日",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "あした",
+        "text": "明日"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "내일"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "ドア",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": null,
+        "text": "ドア"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "문"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "椅子",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "いす",
+        "text": "椅子"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "의자"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "服",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ふく",
+        "text": "服"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "옷"
+    ]
+  },
+  {
+    "text": "りんご",
+    "category": 1,
+    "ruby": [
+      {
+        "reading": null,
+        "text": "りんご"
+      }
+    ],
+    "language": "JAPANESE",
+    "level": 0,
+    "meanings": [
+      "사과"
+    ],
+    "reading": null
+  },
+  {
+    "text": "水",
+    "category": 1,
+    "ruby": [
+      {
+        "reading": "みず",
+        "text": "水"
+      }
+    ],
+    "language": "JAPANESE",
+    "level": 0,
+    "meanings": [
+      "물"
+    ],
+    "reading": null
+  },
+  {
+    "text": "パン",
+    "category": 1,
+    "ruby": [
+      {
+        "reading": null,
+        "text": "パン"
+      }
+    ],
+    "language": "JAPANESE",
+    "level": 0,
+    "meanings": [
+      "빵"
+    ],
+    "reading": null
+  },
+  {
+    "text": "牛乳",
+    "category": 1,
+    "ruby": [
+      {
+        "reading": "ぎゅうにゅう",
+        "text": "牛乳"
+      }
+    ],
+    "language": "JAPANESE",
+    "level": 0,
+    "meanings": [
+      "우유"
+    ],
+    "reading": null
+  },
+  {
+    "level": 0,
+    "text": "卵",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "たまご",
+        "text": "卵"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "달걀",
+      "계란"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "ホテル",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": null,
+        "text": "ホテル"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "호텔"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "地図",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ちず",
+        "text": "地図"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "지도"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "切符",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "きっぷ",
+        "text": "切符"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "표",
+      "티켓"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "かばん",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": null,
+        "text": "かばん"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "가방"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "パスポート",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": null,
+        "text": "パスポート"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "여권"
+    ]
+  },
+  {
+    "text": "車",
+    "category": 3,
+    "ruby": [
+      {
+        "reading": "くるま",
+        "text": "車"
+      }
+    ],
+    "language": "JAPANESE",
+    "level": 0,
+    "meanings": [
+      "자동차",
+      "차",
+      "승용차"
+    ],
+    "reading": null
+  },
+  {
+    "level": 0,
+    "text": "バス",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": null,
+        "text": "バス"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "버스"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "電車",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "でんしゃ",
+        "text": "電車"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "기차",
+      "전철"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "道",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "みち",
+        "text": "道"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "길",
+      "도로"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "駅",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "えき",
+        "text": "駅"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "역"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "嬉しい",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "うれ",
+        "text": "嬉"
+      },
+      {
+        "reading": null,
+        "text": "しい"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "기쁘다",
+      "행복하다",
+      "기쁜",
+      "행복한"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "悲しい",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "かな",
+        "text": "悲"
+      },
+      {
+        "reading": null,
+        "text": "しい"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "슬프다",
+      "슬픈"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "疲れた",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "つか",
+        "text": "疲"
+      },
+      {
+        "reading": null,
+        "text": "れた"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "피곤하다",
+      "피곤한"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "暑い",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "あつ",
+        "text": "暑"
+      },
+      {
+        "reading": null,
+        "text": "い"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "덥다",
+      "더운"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "寒い",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "さむ",
+        "text": "寒"
+      },
+      {
+        "reading": null,
+        "text": "い"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "춥다",
+      "추운"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "雨",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "あめ",
+        "text": "雨"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "비"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "雪",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ゆき",
+        "text": "雪"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "눈"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "風",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "かぜ",
+        "text": "風"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "바람"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "川",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "かわ",
+        "text": "川"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "강"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "空",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "そら",
+        "text": "空"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "하늘"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "約束",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "やくそく",
+        "text": "約束"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "약속"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "経験",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "けいけん",
+        "text": "経験"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "경험"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "習慣",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "しゅうかん",
+        "text": "習慣"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "습관"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "準備",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "じゅんび",
+        "text": "準備"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "준비"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "日本語",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "にほんご",
+        "text": "日本語"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "일본어"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "食べる",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "た",
+        "text": "食"
+      },
+      {
+        "reading": null,
+        "text": "べる"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "먹다",
+      "먹는다",
+      "먹기"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "飲む",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "の",
+        "text": "飲"
+      },
+      {
+        "reading": null,
+        "text": "む"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "마시다",
+      "마신다",
+      "마시기"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "飲み物",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "の",
+        "text": "飲"
+      },
+      {
+        "reading": null,
+        "text": "み"
+      },
+      {
+        "reading": "もの",
+        "text": "物"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "음료",
+      "마실 것"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "食材",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "しょくざい",
+        "text": "食材"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "식재료",
+      "재료"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "メニュー",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": null,
+        "text": "メニュー"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "메뉴",
+      "차림표"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "予約",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "よやく",
+        "text": "予約"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "예약"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "出発",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "しゅっぱつ",
+        "text": "出発"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "출발"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "到着",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "とうちゃく",
+        "text": "到着"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "도착"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "荷物",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "にもつ",
+        "text": "荷物"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "짐",
+      "수하물"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "観光",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "かんこう",
+        "text": "観光"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "관광"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "運転",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "うんてん",
+        "text": "運転"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "운전"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "渋滞",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "じゅうたい",
+        "text": "渋滞"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "교통 체증",
+      "정체"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "駐車場",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ちゅうしゃじょう",
+        "text": "駐車場"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "주차장"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "信号機",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "しんごうき",
+        "text": "信号機"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "신호등"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "燃料",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ねんりょう",
+        "text": "燃料"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "연료"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "安心",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "あんしん",
+        "text": "安心"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "안심"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "不安",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ふあん",
+        "text": "不安"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "불안"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "驚き",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "おどろ",
+        "text": "驚"
+      },
+      {
+        "reading": null,
+        "text": "き"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "놀라움",
+      "놀람"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "自信",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "じしん",
+        "text": "自信"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "자신감"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "疲労",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ひろう",
+        "text": "疲労"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "피로"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "気温",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "きおん",
+        "text": "気温"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "기온",
+      "온도"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "湿度",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "しつど",
+        "text": "湿度"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "습도"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "予報",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "よほう",
+        "text": "予報"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "예보"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "雷",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "かみなり",
+        "text": "雷"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "천둥",
+      "우레"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "霧",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "きり",
+        "text": "霧"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "안개"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "責任",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "せきにん",
+        "text": "責任"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "책임"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "判断",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "はんだん",
+        "text": "判断"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "판단"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "可能性",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "かのうせい",
+        "text": "可能性"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "가능성"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "効率",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "こうりつ",
+        "text": "効率"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "효율"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "解決策",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "かいけつさく",
+        "text": "解決策"
+      }
+    ],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "해결책",
+      "해결 방안"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "栄養",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "えいよう",
+        "text": "栄養"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "영양"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "発酵",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "はっこう",
+        "text": "発酵"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "발효"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "保存",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ほぞん",
+        "text": "保存"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "보존",
+      "저장"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "食物アレルギー",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "しょくもつ",
+        "text": "食物"
+      },
+      {
+        "reading": null,
+        "text": "アレルギー"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "식품 알레르기",
+      "음식 알레르기"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "食品衛生",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "しょくひんえいせい",
+        "text": "食品衛生"
+      }
+    ],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "식품 위생"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "旅程",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "りょてい",
+        "text": "旅程"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "여행 일정",
+      "여정"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "入国審査",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "にゅうこくしんさ",
+        "text": "入国審査"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "입국 심사"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "旅行保険",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "りょこうほけん",
+        "text": "旅行保険"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "여행 보험",
+      "여행자 보험"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "取消料",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "とりけしりょう",
+        "text": "取消料"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "취소 수수료"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "文化遺産",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ぶんかいさん",
+        "text": "文化遺産"
+      }
+    ],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "문화유산"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "燃費",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ねんぴ",
+        "text": "燃費"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "연비",
+      "연료 효율"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "制動距離",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "せいどうきょり",
+        "text": "制動距離"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "제동 거리"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "視界",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "しかい",
+        "text": "視界"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "시야",
+      "가시성"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "整備",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "せいび",
+        "text": "整備"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "정비",
+      "유지 보수"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "自動運転",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "じどううんてん",
+        "text": "自動運転"
+      }
+    ],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "자율 주행"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "充実感",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "じゅうじつかん",
+        "text": "充実感"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "충실감",
+      "충만감"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "挫折感",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "ざせつかん",
+        "text": "挫折感"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "좌절감"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "共感",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "きょうかん",
+        "text": "共感"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "공감"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "集中力",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "しゅうちゅうりょく",
+        "text": "集中力"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "집중력"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "忍耐",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "にんたい",
+        "text": "忍耐"
+      }
+    ],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "인내",
+      "참을성"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "気候変動",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "きこうへんどう",
+        "text": "気候変動"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "기후 변화"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "生態系",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "せいたいけい",
+        "text": "生態系"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "생태계"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "降水量",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "こうすいりょう",
+        "text": "降水量"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "강수량"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "干ばつ",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "かん",
+        "text": "干"
+      },
+      {
+        "reading": null,
+        "text": "ばつ"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "가뭄"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "再生可能エネルギー",
+    "language": "JAPANESE",
+    "ruby": [
+      {
+        "reading": "さいせいかのう",
+        "text": "再生可能"
+      },
+      {
+        "reading": null,
+        "text": "エネルギー"
+      }
+    ],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "재생 에너지",
+      "재생 가능 에너지"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "本",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 0,
+    "reading": "ほん",
+    "meanings": [
+      "책"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "学校",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 0,
+    "reading": "がっこう",
+    "meanings": [
+      "학교"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "友達",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 0,
+    "reading": "ともだち",
+    "meanings": [
+      "친구",
+      "벗"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "家族",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 0,
+    "reading": "かぞく",
+    "meanings": [
+      "가족",
+      "식구"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "家",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 0,
+    "reading": "いえ",
+    "meanings": [
+      "집",
+      "주택"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "猫",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 5,
+    "reading": "ねこ",
+    "meanings": [
+      "고양이"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "犬",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 5,
+    "reading": "いぬ",
+    "meanings": [
+      "개",
+      "강아지"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "太陽",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 5,
+    "reading": "たいよう",
+    "meanings": [
+      "태양",
+      "해"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "月",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 5,
+    "reading": "つき",
+    "meanings": [
+      "달"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "星",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 5,
+    "reading": "ほし",
+    "meanings": [
+      "별"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "海",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 5,
+    "reading": "うみ",
+    "meanings": [
+      "바다"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "山",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 5,
+    "reading": "やま",
+    "meanings": [
+      "산"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "木",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 5,
+    "reading": "き",
+    "meanings": [
+      "나무"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "花",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 5,
+    "reading": "はな",
+    "meanings": [
+      "꽃"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "時間",
+    "language": "JAPANESE",
+    "ruby": [],
+    "category": 0,
+    "reading": "じかん",
+    "meanings": [
+      "시간"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "今天",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "오늘"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "明天",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "내일"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "门",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "문"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "椅子",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "의자"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "衣服",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "옷"
+    ]
+  },
+  {
+    "text": "苹果",
+    "category": 1,
+    "ruby": [],
+    "language": "CHINESE",
+    "level": 0,
+    "meanings": [
+      "사과"
+    ],
+    "reading": null
+  },
+  {
+    "text": "水",
+    "category": 1,
+    "ruby": [],
+    "language": "CHINESE",
+    "level": 0,
+    "meanings": [
+      "물"
+    ],
+    "reading": null
+  },
+  {
+    "text": "面包",
+    "category": 1,
+    "ruby": [],
+    "language": "CHINESE",
+    "level": 0,
+    "meanings": [
+      "빵"
+    ],
+    "reading": null
+  },
+  {
+    "text": "牛奶",
+    "category": 1,
+    "ruby": [],
+    "language": "CHINESE",
+    "level": 0,
+    "meanings": [
+      "우유"
+    ],
+    "reading": null
+  },
+  {
+    "level": 0,
+    "text": "鸡蛋",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "달걀",
+      "계란"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "酒店",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "호텔"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "地图",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "지도"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "票",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "표",
+      "티켓"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "包",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "가방"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "护照",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "여권"
+    ]
+  },
+  {
+    "text": "汽车",
+    "category": 3,
+    "ruby": [],
+    "language": "CHINESE",
+    "level": 0,
+    "meanings": [
+      "자동차",
+      "차",
+      "승용차"
+    ],
+    "reading": null
+  },
+  {
+    "level": 0,
+    "text": "公共汽车",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "버스"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "电车",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "기차",
+      "전철"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "道路",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "길",
+      "도로"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "车站",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "역"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "开心",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "기쁘다",
+      "행복하다",
+      "기쁜",
+      "행복한"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "难过",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "슬프다",
+      "슬픈"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "累",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "피곤하다",
+      "피곤한"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "热",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "덥다",
+      "더운"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "冷",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "춥다",
+      "추운"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "雨",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "비"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "雪",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "눈"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "风",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "바람"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "河",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "강"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "天空",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "하늘"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "约定",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "약속"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "经验",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "경험"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "习惯",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "습관"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "准备",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "준비"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "日语",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "일본어"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "吃",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "먹다",
+      "먹는다",
+      "먹기"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "喝",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "마시다",
+      "마신다",
+      "마시기"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "饮料",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "음료",
+      "마실 것"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "食材",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "식재료",
+      "재료"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "菜单",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "메뉴",
+      "차림표"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "预订",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "예약"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "出发",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "출발"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "到达",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "도착"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "行李",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "짐",
+      "수하물"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "观光",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "관광"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "驾驶",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "운전"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "堵车",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "교통 체증",
+      "정체"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "停车场",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "주차장"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "红绿灯",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "신호등"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "燃料",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "연료"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "安心",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "안심"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "不安",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "불안"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "惊讶",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "놀라움",
+      "놀람"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "自信",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "자신감"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "疲劳",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "피로"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "气温",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "기온",
+      "온도"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "湿度",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "습도"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "预报",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "예보"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "雷",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "천둥",
+      "우레"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "雾",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "안개"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "责任",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "책임"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "判断",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "판단"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "可能性",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "가능성"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "效率",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "효율"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "解决方案",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "해결책",
+      "해결 방안"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "营养",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "영양"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "发酵",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "발효"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "保存",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "보존",
+      "저장"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "食物过敏",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "식품 알레르기",
+      "음식 알레르기"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "食品卫生",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "식품 위생"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "行程",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "여행 일정",
+      "여정"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "入境检查",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "입국 심사"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "旅行保险",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "여행 보험",
+      "여행자 보험"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "取消费用",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "취소 수수료"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "文化遗产",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "문화유산"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "燃油效率",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "연비",
+      "연료 효율"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "制动距离",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "제동 거리"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "能见度",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "시야",
+      "가시성"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "维护",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "정비",
+      "유지 보수"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "自动驾驶",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "자율 주행"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "充实感",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "충실감",
+      "충만감"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "挫败感",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "좌절감"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "共鸣",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "공감"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "专注力",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "집중력"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "耐心",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "인내",
+      "참을성"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "气候变化",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "기후 변화"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "生态系统",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "생태계"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "降水量",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "강수량"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "干旱",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "가뭄"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "可再生能源",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "재생 에너지",
+      "재생 가능 에너지"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "书",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "책"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "学校",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "학교"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "朋友",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "친구",
+      "벗"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "家人",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "가족",
+      "식구"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "房子",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "집",
+      "주택"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "猫",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "고양이"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "狗",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "개",
+      "강아지"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "太阳",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "태양",
+      "해"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "月亮",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "달"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "星星",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "별"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "海",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "바다"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "山",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "산"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "树",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "나무"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "花",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "꽃"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "时间",
+    "language": "CHINESE",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "시간"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "hoy",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "오늘"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "mañana",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "내일"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "puerta",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "문"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "silla",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "의자"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "ropa",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "옷"
+    ]
+  },
+  {
+    "text": "manzana",
+    "category": 1,
+    "ruby": [],
+    "language": "SPANISH",
+    "level": 0,
+    "meanings": [
+      "사과"
+    ],
+    "reading": null
+  },
+  {
+    "text": "agua",
+    "category": 1,
+    "ruby": [],
+    "language": "SPANISH",
+    "level": 0,
+    "meanings": [
+      "물"
+    ],
+    "reading": null
+  },
+  {
+    "text": "pan",
+    "category": 1,
+    "ruby": [],
+    "language": "SPANISH",
+    "level": 0,
+    "meanings": [
+      "빵"
+    ],
+    "reading": null
+  },
+  {
+    "text": "leche",
+    "category": 1,
+    "ruby": [],
+    "language": "SPANISH",
+    "level": 0,
+    "meanings": [
+      "우유"
+    ],
+    "reading": null
+  },
+  {
+    "level": 0,
+    "text": "huevo",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "달걀",
+      "계란"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "hotel",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "호텔"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "mapa",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "지도"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "billete",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "표",
+      "티켓"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "bolso",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "가방"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "pasaporte",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "여권"
+    ]
+  },
+  {
+    "text": "coche",
+    "category": 3,
+    "ruby": [],
+    "language": "SPANISH",
+    "level": 0,
+    "meanings": [
+      "자동차",
+      "차",
+      "승용차"
+    ],
+    "reading": null
+  },
+  {
+    "level": 0,
+    "text": "autobús",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "버스"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "tren",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "기차",
+      "전철"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "carretera",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "길",
+      "도로"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "estación",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "역"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "feliz",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "기쁘다",
+      "행복하다",
+      "기쁜",
+      "행복한"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "triste",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "슬프다",
+      "슬픈"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "cansado",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "피곤하다",
+      "피곤한"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "caluroso",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "덥다",
+      "더운"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "frío",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "춥다",
+      "추운"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "lluvia",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "비"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "nieve",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "눈"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "viento",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "바람"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "río",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "강"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "cielo",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "하늘"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "cita",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "약속"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "experiencia",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "경험"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "hábito",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "습관"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "preparación",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "준비"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "japonés",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "일본어"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "comer",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "먹다",
+      "먹는다",
+      "먹기"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "beber",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "마시다",
+      "마신다",
+      "마시기"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "bebida",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "음료",
+      "마실 것"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "ingrediente",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "식재료",
+      "재료"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "menú",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "메뉴",
+      "차림표"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "reserva",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "예약"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "salida",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "출발"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "llegada",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "도착"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "equipaje",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "짐",
+      "수하물"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "turismo",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "관광"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "conducción",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "운전"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "atasco",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "교통 체증",
+      "정체"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "aparcamiento",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "주차장"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "semáforo",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "신호등"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "combustible",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "연료"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "alivio",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "안심"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "ansiedad",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "불안"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "sorpresa",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "놀라움",
+      "놀람"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "confianza",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "자신감"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "fatiga",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "피로"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "temperatura",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "기온",
+      "온도"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "humedad",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "습도"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "pronóstico",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "예보"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "trueno",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "천둥",
+      "우레"
+    ]
+  },
+  {
+    "level": 1,
+    "text": "niebla",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "안개"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "responsabilidad",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "책임"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "juicio",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "판단"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "posibilidad",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "가능성"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "eficiencia",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "효율"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "solución",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "해결책",
+      "해결 방안"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "nutrición",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "영양"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "fermentación",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "발효"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "conservación",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "보존",
+      "저장"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "alergia alimentaria",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "식품 알레르기",
+      "음식 알레르기"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "higiene alimentaria",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 1,
+    "reading": null,
+    "meanings": [
+      "식품 위생"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "itinerario",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "여행 일정",
+      "여정"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "control migratorio",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "입국 심사"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "seguro de viaje",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "여행 보험",
+      "여행자 보험"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "cargo por cancelación",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "취소 수수료"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "patrimonio cultural",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 2,
+    "reading": null,
+    "meanings": [
+      "문화유산"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "eficiencia de combustible",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "연비",
+      "연료 효율"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "distancia de frenado",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "제동 거리"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "visibilidad",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "시야",
+      "가시성"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "mantenimiento",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "정비",
+      "유지 보수"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "conducción autónoma",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 3,
+    "reading": null,
+    "meanings": [
+      "자율 주행"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "plenitud",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "충실감",
+      "충만감"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "frustración",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "좌절감"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "empatía",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "공감"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "concentración",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "집중력"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "paciencia",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 4,
+    "reading": null,
+    "meanings": [
+      "인내",
+      "참을성"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "cambio climático",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "기후 변화"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "ecosistema",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "생태계"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "precipitación",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "강수량"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "sequía",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "가뭄"
+    ]
+  },
+  {
+    "level": 2,
+    "text": "energía renovable",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "재생 에너지",
+      "재생 가능 에너지"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "libro",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "책"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "escuela",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "학교"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "amigo",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "친구",
+      "벗"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "familia",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "가족",
+      "식구"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "casa",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "집",
+      "주택"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "gato",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "고양이"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "perro",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "개",
+      "강아지"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "sol",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "태양",
+      "해"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "luna",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "달"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "estrella",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "별"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "mar",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "바다"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "montaña",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "산"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "árbol",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "나무"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "flor",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 5,
+    "reading": null,
+    "meanings": [
+      "꽃"
+    ]
+  },
+  {
+    "level": 0,
+    "text": "tiempo",
+    "language": "SPANISH",
+    "ruby": [],
+    "category": 0,
+    "reading": null,
+    "meanings": [
+      "시간"
+    ]
+  }
+]

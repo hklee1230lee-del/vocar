@@ -24,7 +24,7 @@ enum class VoiceState { STARTING, READY, UNAVAILABLE }
  * - 통화·내비 안내 등으로 포커스를 잃으면 즉시 멈추고 onInterrupted로 알린다.
  * - 엔진이나 영어 음성이 없으면 UNAVAILABLE이 되고, 앱은 글자로 학습을 이어간다.
  */
-class Speaker(context: Context, private val onInterrupted: () -> Unit) {
+class Speaker(context: Context, private val locale: Locale = Locale.US, private val onInterrupted: () -> Unit) {
     var state by mutableStateOf(VoiceState.STARTING)
         private set
     var speaking by mutableStateOf(false)
@@ -75,12 +75,12 @@ class Speaker(context: Context, private val onInterrupted: () -> Unit) {
             return
         }
         val language = try {
-            engine.setLanguage(Locale.US)
+            engine.setLanguage(locale)
         } catch (t: Throwable) {
             TextToSpeech.LANG_NOT_SUPPORTED
         }
         if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
-            Log.w(TAG, "이 기기의 TTS는 영어(미국)를 지원하지 않습니다.")
+            Log.w(TAG, "이 기기의 TTS는 ${locale.toLanguageTag()}를 지원하지 않습니다.")
             state = VoiceState.UNAVAILABLE
             return
         }

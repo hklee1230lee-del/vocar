@@ -7,7 +7,7 @@ import java.io.File
  * 학습 기록을 이 차량(앱 전용 저장소)의 파일 하나에 둔다. 서버·계정 없이 동작한다.
  * 임시 파일에 쓴 뒤 이름을 바꿔, 저장 도중 전원이 꺼져도 이전 기록이 깨지지 않게 한다.
  */
-class Store(private val file: File) {
+class Store(private val file: File, private val sentenceRecordFiles: List<File> = emptyList()) {
     private val temp = File(file.parentFile, file.name + ".tmp")
 
     fun load(): AppData {
@@ -37,5 +37,10 @@ class Store(private val file: File) {
     fun clear() {
         file.delete()
         temp.delete()
+        // The existing "erase everything" action also clears every added language.
+        sentenceRecordFiles.filter { it != file }.forEach { record ->
+            record.delete()
+            File(record.parentFile, record.name + ".tmp").delete()
+        }
     }
 }

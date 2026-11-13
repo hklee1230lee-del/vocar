@@ -34,7 +34,7 @@ object Content {
     private const val W3 = "업무 상태·도움 요청"
     private const val W4 = "일상·주문·계획"
 
-    val bundles: List<Bundle> = listOf(
+    private val englishBundles: List<Bundle> = listOf(
         // ── 1주: 인사·확인·간단한 부탁 ─────────────────────────────
         bundle(
             id = "w1d1", week = 1, topic = W1,
@@ -504,7 +504,14 @@ object Content {
         ),
     )
 
-    private val byId: Map<String, Bundle> = bundles.associateBy { it.id }
+    // Selected by the singleTask MainActivity before its controller is created.
+    var language: StudyLanguage = StudyLanguage.ENGLISH
+    val bundles: List<Bundle>
+        get() = if (language == StudyLanguage.ENGLISH) englishBundles else SentenceContent.forLanguage(language)
+
+    private val byId: Map<String, Bundle> by lazy {
+        (englishBundles + SentenceContent.japanese + SentenceContent.chinese + SentenceContent.spanish).associateBy { it.id }
+    }
 
     fun find(id: String): Bundle? = byId[id]
 

@@ -36,6 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".words.LanguageActivity" android:exported="false" android:resizeableActivity="true" />
     </application>
 
 </manifest>

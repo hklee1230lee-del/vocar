@@ -20,6 +20,7 @@ android {
     }
 
     buildTypes {
+        debug { applicationIdSuffix = ".econmultilingual" }
         release {
             optimization {
                 enable = true

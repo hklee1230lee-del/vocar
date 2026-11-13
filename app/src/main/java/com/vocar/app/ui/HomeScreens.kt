@@ -825,9 +825,9 @@ private fun SettingsScreen(c: AppController, wide: Boolean) {
             ToggleRow("천천히 듣기", "음원을 항상 느리게 들려줘요", settings.slowAudio, { on -> c.updateSettings { it.copy(slowAudio = on) } })
             T(
                 when (c.speaker.state) {
-                    VoiceState.READY -> "음원: 이 기기의 영어 음성으로 들려줘요. 마이크는 쓰지 않아요."
+                    VoiceState.READY -> "음원: 이 기기의 ${Content.language.display} 음성으로 들려줘요. 마이크는 쓰지 않아요."
                     VoiceState.STARTING -> "음원을 준비하고 있어요."
-                    VoiceState.UNAVAILABLE -> "이 기기에서는 영어 음원을 재생할 수 없어 글자로 진행해요. 마이크는 쓰지 않아요."
+                    VoiceState.UNAVAILABLE -> "이 기기에서는 ${Content.language.display} 음원을 재생할 수 없어 글자로 진행해요. 마이크는 쓰지 않아요."
                 },
                 13,
                 color = p.textDim,
@@ -854,6 +854,27 @@ private fun SettingsScreen(c: AppController, wide: Boolean) {
                 }
             }
             T("VOCAR $version · 콘텐츠 v${Content.CONTENT_VERSION} · 표현 ${Content.bundles.size}개", 12, color = p.textDim)
+            Panel(Modifier.fillMaxWidth()) {
+                T("학습 언어", 17, weight = FontWeight.SemiBold)
+                com.vocar.app.domain.StudyLanguage.entries.chunked(2).forEach { languages ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        languages.forEach { language ->
+                            BigButton(
+                                if (language == com.vocar.app.domain.StudyLanguage.CHINESE) "중국어(간체)" else language.display,
+                                {
+                                    if (language != Content.language) {
+                                        context.startActivity(android.content.Intent(context, com.vocar.app.MainActivity::class.java)
+                                            .putExtra("study_language", language.name))
+                                    }
+                                },
+                                Modifier.weight(1f),
+                                kind = if (language == Content.language) ButtonKind.PRIMARY else ButtonKind.SECONDARY,
+                                minHeight = 52, textSize = 16,
+                            )
+                        }
+                    }
+                }
+            }
         },
     )
 }
@@ -875,7 +896,7 @@ private fun OnboardingScreen(c: AppController, wide: Boolean) {
             T("VOCAR", 22, weight = FontWeight.Black)
             Spacer(Modifier.height(6.dp))
             T("주차 후,\n내리기 전 한마디", 40, weight = FontWeight.Bold)
-            T("회사나 집에 도착해 주차한 뒤 1~3분.\n오늘 쓸 영어 표현 하나를 듣고, 말해 보고, 다시 떠올려요.", 16, color = p.textDim)
+            T("회사나 집에 도착해 주차한 뒤 1~3분.\n오늘 쓸 ${Content.language.display} 표현 하나를 듣고, 말해 보고, 다시 떠올려요.", 16, color = p.textDim)
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Tag("주차 중에만", on = true)
                 Tag("가입 없이", on = true)

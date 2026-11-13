@@ -1,6 +1,10 @@
 package com.vocar.app
 
 import android.os.Bundle
+import android.content.Intent
+import com.vocar.app.domain.Content
+import com.vocar.app.domain.StudyLanguage
+import java.util.Locale
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.vocar.app.audio.Speaker
@@ -26,12 +30,28 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val preferences = getSharedPreferences("study_language", MODE_PRIVATE)
+        val language = StudyLanguage.from(intent.getStringExtra("study_language")
+            ?: preferences.getString("selected", null))
+        preferences.edit().putString("selected", language.name).apply()
+        Content.language = language
+        val recordFiles = StudyLanguage.entries.associateWith { selected ->
+            File(filesDir, if (selected == StudyLanguage.ENGLISH) "vocar.json"
+                else "vocar_${selected.name.lowercase(Locale.ROOT)}.json")
+        }
         gate = ParkingGate(this, onParked = { controller.onParked() }, onLeftParked = { controller.onGateLost() })
-        speaker = Speaker(this) { controller.onAudioInterrupted() }
+        speaker = Speaker(this, Locale.forLanguageTag(language.tag)) { controller.onAudioInterrupted() }
         trips = TripMonitor.get(this)
-        controller = AppController(Store(File(filesDir, "vocar.json")), gate, speaker, trips, EconStore(File(filesDir, "econ.json")))
+        controller = AppController(Store(recordFiles.getValue(language), recordFiles.values.toList()), gate, speaker, trips, EconStore(File(filesDir, "econ.json")))
         trips.attach { controller.onTripEnd(it) }
         setContent { AppRoot(controller) }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // singleTask: dispose the old controller before loading another language's records.
+        recreate()
     }
 
     override fun onStart() {

@@ -12,3 +12,17 @@ local.properties
 *.aab
 *.jks
 *.keystore
+*.log
+*.backup-*
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+key.properties
+secrets.properties
+**/.android/
+**/.gradle-ascii/
+/sdk/
+/avd/
