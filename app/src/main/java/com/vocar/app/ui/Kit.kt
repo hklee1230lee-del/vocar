@@ -1,9 +1,11 @@
 package com.vocar.app.ui
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -54,6 +56,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -177,13 +180,13 @@ fun T(
     )
 }
 
-/** 누르는 동안 살짝 작아지는 반응. 눌림이 바로 보이게 한다. */
+/** 누르는 동안 살짝 작아지는 반응. 누르면 즉시 줄고, 떼면 튀지 않고 돌아온다. */
 @Composable
 private fun pressScale(source: MutableInteractionSource): Float {
     val pressed by source.collectIsPressedAsState()
     val scale by animateFloatAsState(
         if (pressed) 0.96f else 1f,
-        spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        if (pressed) snap() else tween(160, easing = CubicBezierEasing(0.23f, 1f, 0.32f, 1f)),
         label = "press",
     )
     return scale
@@ -398,7 +401,7 @@ fun ToggleRow(
 ) {
     val p = LocalPalette.current
     val shape = RoundedCornerShape(22.dp)
-    val knob by animateDpAsState(if (on) 24.dp else 0.dp, spring(dampingRatio = Spring.DampingRatioLowBouncy), label = "knob")
+    val knob by animateDpAsState(if (on) 24.dp else 0.dp, spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMedium), label = "knob")
     val track by animateColorAsState(if (on) p.accentA else p.line, tween(180), label = "track")
     Row(
         modifier
@@ -426,7 +429,7 @@ fun ToggleRow(
         ) {
             Box(
                 Modifier
-                    .offset(x = knob)
+                    .offset { IntOffset(knob.roundToPx(), 0) }
                     .size(24.dp)
                     .clip(CircleShape)
                     .background(Color.White),
