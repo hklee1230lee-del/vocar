@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.vocar.app.BuildConfig
 import com.vocar.app.domain.Arrivals
 
 /**
@@ -26,7 +27,11 @@ class NaviArrivals(private val context: Context, private val onArrival: (TripEnd
 
     private val listener = object : NaviHelperEventListener {
         override fun onDestinationInfo(destinationInfo: DestinationInfo) {
-            main.post { destination = destinationInfo.name.takeIf { it.isNotBlank() } }
+            main.post {
+                destination = destinationInfo.name.takeIf { it.isNotBlank() }
+                // 이름이 집/회사로 오는지 확인하는 용도. 이름은 debug 빌드 로그에만 남긴다.
+                if (BuildConfig.DEBUG) Log.i(TAG, "navi: 목적지 이름='${destinationInfo.name}' → ${Arrivals.placeFromName(destinationInfo.name) ?: "기타"}")
+            }
         }
 
         override fun onDestinationChanged() {

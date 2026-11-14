@@ -40,7 +40,7 @@ Vehicle SDK 2.3.2의 읽기 API(권한 `pleos.car.permission.CAR_DRIVE`)와, 내
 | --- | --- | --- |
 | 주행이 끝난 시각 | `Gear.registerGearSelection` — P가 아닌 기어 뒤에 P가 되는 순간 | 콜백 방식. 앱이 화면에 없어도 프로세스가 살아 있으면 받음 |
 | 놓친 주행 보완 | `Odometer.getCurrentDistanceDriven` (누적 km) | 앱이 주차 상태로 열릴 때 읽어, 지난 기록보다 0.3km 이상 늘었으면 도착으로 기록(시각은 앱을 연 시각) |
-| 내비 목적지 도착 | `NaviHelper.onDestinationArrived` | 내비 안내를 켠 주행에서만 옴. 이벤트의 주행 거리·시간을 쓰고, 목적지 이름이 `집`·`회사` 등과 정확히 같으면 그 값으로 확정 안내("내비 목적지가 회사로 저장돼 있어요"). 이름·주소·좌표는 저장하지 않음 |
+| 내비 목적지 도착 | `NaviHelper.onDestinationArrived` | 내비 안내를 켠 주행에서만 옴. 이벤트의 주행 거리·시간을 쓰고, 목적지 이름이 `집`·`회사` 등과 정확히 같으면 그 값으로 확정 안내("내비 목적지가 회사로 저장돼 있어요"). 이름·주소·좌표는 저장하지 않음. **에뮬레이터 확인: 내비에 집으로 등록한 장소도 SDK는 `집`이 아니라 장소 이름(예: `더현대서울`)으로 준다. 따라서 이 이름 규칙은 실제로는 거의 동작하지 않고, 도착 감지·주행 거리·시간만 유효하다** |
 | 이번 주행 거리·시간 | `Odometer.getTripCurrentDrivingDistance` (m), `getTripCurrentDrivingTime` (분) | 없으면 누적 거리 차이로 대신 |
 
 출근인지 퇴근인지는 `domain/Arrivals.kt`의 규칙으로 가립니다.
