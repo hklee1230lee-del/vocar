@@ -71,6 +71,9 @@ class AppController(
         private set
     var tab by mutableStateOf(Tab.TODAY)
 
+    /** Pleos STT 마이크. 없으면(null) 말하기 단계는 자가 확인으로만 진행한다. */
+    var mic: com.vocar.app.audio.Mic? = null
+
     // ── 경제 상식(오늘의 퀘스트 · 경제 사전 · 배지 도감) ──────────────────────
 
     var econSection by mutableStateOf(EconSection.QUEST)
@@ -297,12 +300,12 @@ class AppController(
 
     /** 다른 앱으로 전환·화면 꺼짐: 재생을 멈추고, 돌아와도 자동으로 이어가지 않는다. */
     fun onBackground() {
-        speaker.stop()
+        quiet()
         if (screen == Screen.LESSON && pause == null) pause = PauseReason.BACKGROUND
     }
 
     fun onGateLost() {
-        speaker.stop()
+        quiet()
         if (screen == Screen.LESSON && pause == null) pause = PauseReason.GATE
     }
 
@@ -314,7 +317,7 @@ class AppController(
 
     fun updateSettings(change: (Settings) -> Settings) {
         val next = change(data.settings)
-        if (next.silent) speaker.stop()
+        if (next.silent) quiet()
         persist(data.copy(settings = next))
     }
 
@@ -334,7 +337,7 @@ class AppController(
     fun toggleFavorite(bundleId: String) = persist(Engine.toggleFavorite(data, bundleId))
 
     fun eraseEverything() {
-        speaker.stop()
+        quiet()
         store.clear()
         econStore.clear()
         econ = EconProgress.empty(today)
@@ -418,7 +421,7 @@ class AppController(
     /** 선택 즉시 제출한다. 두 번 눌려도 한 번만 반영된다. */
     fun choose(choice: Choice) {
         if (!canAnswer()) return
-        speaker.stop()
+        quiet()
         picked = choice
         commit(if (choice.correct) Verdict.CORRECT else Verdict.WRONG)
         phase = Phase.FEEDBACK
@@ -450,13 +453,18 @@ class AppController(
         advance()
     }
 
+    /** 마이크로 말한 문장이 정답 문장과 같으면 연습으로 기록하고 넘어간다. 아니면 들린 문장을 보여 준다. */
+    fun speakToMic(expected: String) {
+        mic?.listen { heard -> if (com.vocar.app.audio.sameSentence(heard, expected)) practiced() }
+    }
+
     fun next() {
         if (screen != Screen.LESSON || pause != null || phase != Phase.FEEDBACK) return
         advance()
     }
 
     private fun advance() {
-        speaker.stop()
+        quiet()
         val s = session
         if (s == null) {
             leaveLesson()
@@ -475,7 +483,7 @@ class AppController(
 
     /** 끝내기: 어느 단계에서든 한 번에. 확정된 활동은 이미 저장되어 있다. */
     fun finishNow() {
-        speaker.stop()
+        quiet()
         val s = session
         if (s == null) {
             leaveLesson()
@@ -512,6 +520,12 @@ class AppController(
             quiet && speaker.state == VoiceState.STARTING -> null
             else -> "지금은 소리를 재생할 수 없어요. 글자로 계속할 수 있어요."
         }
+    }
+
+    /** 음원 재생과 마이크 인식을 함께 멈춘다. 화면을 벗어나거나 P를 벗어날 때도 이 경로를 쓴다. */
+    private fun quiet() {
+        speaker.stop()
+        mic?.cancel()
     }
 
     fun stopAudio() = speaker.stop()

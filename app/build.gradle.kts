@@ -20,7 +20,6 @@ android {
     }
 
     buildTypes {
-        debug { applicationIdSuffix = ".econmultilingual" }
         release {
             optimization {
                 enable = true
@@ -39,6 +38,8 @@ android {
 
 dependencies {
     implementation(libs.pleos.vehicle)
+    implementation(libs.pleos.tts)
+    implementation(libs.pleos.stt)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

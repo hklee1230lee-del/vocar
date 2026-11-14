@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $adb = 'C:\Android\Sdk\platform-tools\adb.exe'
 $avd = 'Pleos_Connect_v2.1.0_ASCII'
-$pkg = 'com.vocar.app.econmultilingual'
+$pkg = 'com.vocar.app'
 $apk = 'C:\Projects\VOCAR\integration\econ-multilingual\app\build\outputs\apk\debug\app-debug.apk'
 $hash = 'DB9087573A49F94D2C5604AC03E0DF514E87FDED1C0587E12DA34999E68AF72A'
 $mutex = New-Object Threading.Mutex($false, 'Local\VOCARFinal1Launcher')

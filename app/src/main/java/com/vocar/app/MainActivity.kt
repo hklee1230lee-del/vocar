@@ -7,6 +7,7 @@ import com.vocar.app.domain.StudyLanguage
 import java.util.Locale
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.vocar.app.audio.Mic
 import com.vocar.app.audio.Speaker
 import com.vocar.app.data.EconStore
 import com.vocar.app.data.Store
@@ -43,6 +44,7 @@ class MainActivity : ComponentActivity() {
         speaker = Speaker(this, Locale.forLanguageTag(language.tag)) { controller.onAudioInterrupted() }
         trips = TripMonitor.get(this)
         controller = AppController(Store(recordFiles.getValue(language), recordFiles.values.toList()), gate, speaker, trips, EconStore(File(filesDir, "econ.json")))
+        controller.mic = Mic(this, Locale.forLanguageTag(language.tag))
         trips.attach { controller.onTripEnd(it) }
         setContent { AppRoot(controller) }
     }
@@ -70,6 +72,7 @@ class MainActivity : ComponentActivity() {
         // 도착 감지(TripMonitor)는 프로세스가 사는 동안 계속 듣는다. 화면과의 연결만 끊는다.
         trips.detach()
         speaker.close()
+        controller.mic?.close()
         gate.close()
         super.onDestroy()
     }

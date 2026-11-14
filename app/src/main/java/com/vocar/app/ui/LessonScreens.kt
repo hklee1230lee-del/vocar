@@ -186,11 +186,24 @@ private fun AskBody(c: AppController, q: Question, wide: Boolean) {
                     T("스스로 확인한 결과는 연습으로만 기록해요.", 13, color = p.textDim)
                 }
                 else -> {
+                    val mic = c.mic
+                    if (mic != null && !silent && mic.state != com.vocar.app.audio.MicState.FAILED) {
+                        val listening = mic.state == com.vocar.app.audio.MicState.LISTENING
+                        BigButton(
+                            if (listening) "듣고 있어요…" else "🎤 마이크로 말하기",
+                            { if (listening) mic.cancel() else c.speakToMic(q.answerEn) },
+                            Modifier.fillMaxWidth(),
+                            sub = "버튼을 누를 때만 인식해요",
+                            minHeight = 82,
+                        )
+                        if (mic.heard.isNotBlank()) T("들린 말 · ${mic.heard}", 14, color = p.textDim)
+                    }
                     BigButton(
                         if (silent) "읽어 봤어요" else "말해 봤어요",
                         { c.practiced() },
                         Modifier.fillMaxWidth(),
                         sub = "마이크를 쓰지 않아요 · 연습으로 기록",
+                        kind = if (mic != null && !silent && mic.state != com.vocar.app.audio.MicState.FAILED) ButtonKind.OUTLINE else ButtonKind.PRIMARY,
                         minHeight = 82,
                     )
                     T(

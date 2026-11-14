@@ -12,19 +12,24 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import ai.pleos.playground.tts.TextToSpeech as PleosTts
+import ai.pleos.playground.tts.constant.ErrorType
+import ai.pleos.playground.tts.constant.Mode
+import ai.pleos.playground.tts.listener.EventListener
+import ai.pleos.playground.tts.listener.OnInitializeListener
 import java.util.Locale
 
 enum class VoiceState { STARTING, READY, UNAVAILABLE }
 
 /**
- * 영어 표현 음원 재생. 지금은 기기의 TTS 엔진(미국 영어)을 쓴다.
+ * 영어 표현 음원 재생. Pleos TTS SDK를 먼저 쓰고, 초기화에 실패하면 기기의 TTS 엔진(미국 영어)으로 넘어간다.
  * 기획안의 "검수 음원 파일"이 준비되면 이 클래스만 바꾸면 된다.
  *
  * - 재생 전에 오디오 포커스를 요청하고, 얻지 못하면 재생하지 않는다(무단 재생·볼륨 변경 없음).
  * - 통화·내비 안내 등으로 포커스를 잃으면 즉시 멈추고 onInterrupted로 알린다.
  * - 엔진이나 영어 음성이 없으면 UNAVAILABLE이 되고, 앱은 글자로 학습을 이어간다.
  */
-class Speaker(context: Context, private val locale: Locale = Locale.US, private val onInterrupted: () -> Unit) {
+class Speaker(private val context: Context, private val locale: Locale = Locale.US, private val onInterrupted: () -> Unit) {
     var state by mutableStateOf(VoiceState.STARTING)
         private set
     var speaking by mutableStateOf(false)
@@ -55,8 +60,53 @@ class Speaker(context: Context, private val locale: Locale = Locale.US, private 
         .build()
 
     private var tts: TextToSpeech? = null
+    private var pleos: PleosTts? = null
 
     init {
+        try {
+            val engine = PleosTts(context.applicationContext, Mode.HYBRID)
+            pleos = engine
+            engine.initialize(object : OnInitializeListener {
+                override fun onSuccess() {
+                    main.post { onPleosReady(engine) }
+                }
+
+                override fun onFailure(error: ErrorType) {
+                    Log.w(TAG, "Pleos TTS 초기화 실패($error), 기기 TTS로 전환합니다.")
+                    main.post { fallBack() }
+                }
+            })
+        } catch (t: Throwable) {
+            Log.w(TAG, "Pleos TTS를 시작하지 못했습니다: ${t.message}")
+            fallBack()
+        }
+    }
+
+    private fun onPleosReady(engine: PleosTts) {
+        if (closed || pleos !== engine) return
+        try {
+            engine.setLocale(locale)
+            engine.setAudioAttributes(attributes)
+            engine.addEventListener(object : EventListener {
+                override fun onStart() { main.post { if (current.isNotEmpty()) speaking = true } }
+                override fun onReady() {}
+                override fun onDone() { main.post { finished(current) } }
+                override fun onError(error: ErrorType) { main.post { finished(current) } }
+                override fun onStop() {}
+                override fun onUpdatedRms(rms: Double) {}
+            })
+            state = VoiceState.READY
+        } catch (t: Throwable) {
+            Log.w(TAG, "Pleos TTS 설정 실패: ${t.message}")
+            fallBack()
+        }
+    }
+
+    /** Pleos TTS를 못 쓸 때 기기 TTS로 전환한다. */
+    private fun fallBack() {
+        if (closed || tts != null) return
+        runCatching { pleos?.release() }
+        pleos = null
         try {
             tts = TextToSpeech(context.applicationContext) { status ->
                 main.post { onEngineReady(status) }
@@ -115,13 +165,25 @@ class Speaker(context: Context, private val locale: Locale = Locale.US, private 
     /** 재생을 시작했으면 true. 엔진이 없거나 포커스를 얻지 못하면 false. */
     fun speak(text: String, slow: Boolean): Boolean {
         val engine = tts
-        if (closed || engine == null || state != VoiceState.READY) return false
+        val sdk = pleos
+        if (closed || state != VoiceState.READY || (engine == null && sdk == null)) return false
         if (!hasFocus) {
             hasFocus = audio.requestAudioFocus(focusRequest) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
         }
         if (!hasFocus) return false
         current = "utterance-${++sequence}"
-        engine.setSpeechRate(if (slow) 0.7f else 0.95f)
+        if (sdk != null) {
+            // Pleos TTS는 속도 옵션이 없어 slow는 무시한다.
+            return try {
+                sdk.speak(text, true)
+                true
+            } catch (t: Throwable) {
+                current = ""
+                releaseFocus()
+                false
+            }
+        }
+        engine!!.setSpeechRate(if (slow) 0.7f else 0.95f)
         val result = engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, current)
         if (result != TextToSpeech.SUCCESS) {
             current = ""
@@ -140,6 +202,7 @@ class Speaker(context: Context, private val locale: Locale = Locale.US, private 
         current = ""
         speaking = false
         runCatching { tts?.stop() }
+        runCatching { pleos?.stop() }
     }
 
     private fun releaseFocus() {
@@ -153,7 +216,9 @@ class Speaker(context: Context, private val locale: Locale = Locale.US, private 
         closed = true
         stop()
         runCatching { tts?.shutdown() }
+        runCatching { pleos?.release() }
         tts = null
+        pleos = null
     }
 
     private companion object {
