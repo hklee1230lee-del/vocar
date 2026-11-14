@@ -3,7 +3,15 @@
 > 주차 후, 내리기 전 1~3분. 오늘 쓸 영어 표현 하나를 듣고, 말해 보고, 다시 떠올리는 Pleos Connect 차량용 학습 앱.
 
 기획안 `pleos_language_learning_plan.md` v1.0의 MVP 범위를 Kotlin / Jetpack Compose로 구현했습니다.
-Pleos Connect v2.1.0 에뮬레이터(API 34) + Vehicle SDK 2.3.2 기준입니다.
+
+| | |
+| --- | --- |
+| 대상 | Pleos Connect v2.1.0 (API 34), Vehicle SDK 2.3.2, Pleos TTS 3.3.1 |
+| 패키지 | `com.vocar.app` |
+| 안전 | 기어 P + 주행 제한 없음일 때만 학습·음원 재생. 권한은 읽기용 `CAR_DRIVE`와 `TTS_SERVICE`·`STT_SERVICE` |
+| 오프라인 | 학습 묶음 20개가 앱에 포함. 네트워크 권한을 쓰지 않음 |
+| 실행 | [빌드와 실행](#빌드와-실행) · 코드는 [코드 구조](#코드-구조) |
+| APK | 저장소의 Releases 최신 릴리스(디버그 서명) |
 
 ## 무엇이 들어 있나
 
@@ -22,7 +30,7 @@ Pleos Connect v2.1.0 에뮬레이터(API 34) + Vehicle SDK 2.3.2 기준입니다
 | FR-12 기록 관리 | 이 차량에만 저장, 설정에서 모두 지우기 |
 | 도착 감지 | 주행이 끝난 시점을 기록하고 출근/퇴근을 추정해 오늘 학습을 바꿔 제안 (아래 참고) |
 
-아직 넣지 않은 것: 음성 인식(STT) 평가(FR-06), 검수 음원 파일(지금은 기기 TTS), 분석 이벤트 전송(FR-13), 계정·동기화, Gleo 연동.
+아직 넣지 않은 것: 음성 인식(STT) 평가(FR-06), 검수 음원 파일(지금은 Pleos TTS, 초기화가 안 되면 기기 TTS), 분석 이벤트 전송(FR-13), 계정·동기화, Gleo 연동.
 
 ## 출근·퇴근이 끝난 시점을 아는 방법
 
@@ -82,7 +90,7 @@ app/src/main/java/com/vocar/app/
   vehicle/ParkingGate.kt   CarUxRestrictions + 기어 P 확인 (주차 전용 게이트)
   vehicle/TripMonitor.kt   기어·주행거리로 주행이 끝난 시점 감지
   domain/Arrivals.kt       도착 기록, 출근/퇴근 추정 규칙
-  audio/Speaker.kt         TTS 재생, 오디오 포커스 요청·상실 처리
+  audio/Speaker.kt         TTS 재생(Pleos TTS → 기기 TTS), 오디오 포커스 요청·상실 처리
   ui/AppController.kt      화면 상태, 저장 시점, 일시정지·재개
   ui/Kit.kt                색·글자·버튼 등 공통 요소
   ui/HomeScreens.kt        첫 안내, 오늘, 표현 보관함, 내 기록, 설정
@@ -98,4 +106,4 @@ app/src/test/              EngineTest(학습 규칙), ArrivalsTest(도착 추정
 - 끝내기는 어느 단계에서나 한 번. 확인창 없음. 완료 후 다음 학습을 자동으로 시작하지 않음.
 - 화면을 벗어나거나, 주차가 풀리거나, 다른 소리에 밀리면 멈추고, 돌아와도 사용자가 눌러야 이어감.
 - 자가 확인(떠올렸어요)은 연습으로만 기록하고 "회상 확인"으로 세지 않음.
-- 권한은 읽기용 `pleos.car.permission.CAR_DRIVE` 하나. 마이크·위치·네트워크 권한 없음.
+- 권한은 읽기용 `pleos.car.permission.CAR_DRIVE`와 `TTS_SERVICE`·`STT_SERVICE`. 위치·네트워크 권한 없음. 마이크는 STT를 쓰는 말하기 단계에서만.
