@@ -271,8 +271,17 @@ class AppController(
     fun onParked() = trips.checkNow()
 
     /** 주행이 끝난 시점을 기록하고, 출근/퇴근 추정에 맞춰 오늘 할 학습을 바꿔 제안한다. */
+    private var naviPoi: Pair<String, String>? = null
+
+    /** 도착 기록이 내비 목적지 식별자와 연결돼 있을 때만, 사용자가 확인한 값을 그 목적지로 기억한다. */
+    private fun learn(base: AppData, arrivalId: String, place: Place?): AppData {
+        val poi = naviPoi?.takeIf { it.first == arrivalId }?.second ?: return base
+        return if (place == null) base else Arrivals.learn(base, poi, place)
+    }
+
     fun onTripEnd(trip: TripEnd) {
         val local = Instant.ofEpochMilli(trip.atMs).atZone(ZoneId.systemDefault())
+        val learned = trip.poi?.let { data.knownPlaces[it] }
         val next = Arrivals.record(
             data,
             id = "a" + trip.atMs.toString(36),
@@ -283,10 +292,12 @@ class AppController(
             tripKm = trip.tripKm,
             tripMinutes = trip.tripMinutes,
             approximate = trip.approximate,
-            hint = trip.hint,
+            hint = trip.hint ?: learned,
             viaNavi = trip.viaNavi,
+            hintLearned = trip.hint == null && learned != null,
         )
         if (next === data) return
+        trip.poi?.let { poi -> next.arrivals.lastOrNull()?.let { naviPoi = it.id to poi } }
         persist(next)
         refreshDay()
         if (screen == Screen.HOME && sessionId == null) mode = suggestedMode()
@@ -295,7 +306,7 @@ class AppController(
     /** 안내가 틀렸을 때 사용자가 바로잡는다. 이 값은 다음 추정의 기준이 된다. */
     fun confirmArrival(place: Place) {
         val arrival = pendingArrival ?: return
-        persist(Arrivals.confirm(data, arrival.id, place))
+        persist(learn(Arrivals.confirm(data, arrival.id, place), arrival.id, place))
         Arrivals.modeFor(place)?.let { mode = it }
     }
 
@@ -367,7 +378,10 @@ class AppController(
         val (next, created) = Engine.startSession(data, mode, length, today, now, id)
         if (created == null) return
         // 도착 직후 고른 모드는 그 도착이 출근이었는지 퇴근이었는지의 정답이 된다.
-        persist(Arrivals.confirmFromSession(next, mode, now))
+        val confirmed = Arrivals.confirmFromSession(next, mode, now)
+        val last = confirmed.arrivals.lastOrNull()
+        val changed = last?.confirmed != null && next.arrivals.lastOrNull()?.confirmed == null
+        persist(if (changed) learn(confirmed, last!!.id, last.confirmed) else confirmed)
         enter(created.id, 0)
     }
 

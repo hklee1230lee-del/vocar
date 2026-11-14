@@ -191,4 +191,29 @@ class ArrivalsTest {
         assertEquals(25, merged.tripMinutes)
         assertFalse(merged.approximate)
     }
+
+    @Test
+    fun a_confirmed_destination_is_remembered_and_recognised_next_time() {
+        var d = Arrivals.learn(AppData.EMPTY, "poi/1", Place.WORK)
+        assertEquals(Place.WORK, d.knownPlaces["poi/1"])
+        val hinted = Arrivals.record(d, "n1", ms(day, 13 * 60), day, 13 * 60, null, 12.4f, 25, false,
+            hint = d.knownPlaces["poi/1"], viaNavi = true, hintLearned = true).arrivals.single()
+        assertEquals(Place.WORK, hinted.guess)
+        assertTrue(hinted.sure)
+        assertTrue(hinted.reason.startsWith("전에"))
+        // 다시 확인하면 덮어쓰고, 출퇴근이 아니라고 하면 잊는다.
+        d = Arrivals.learn(d, "poi/1", Place.HOME)
+        assertEquals(Place.HOME, d.knownPlaces["poi/1"])
+        d = Arrivals.learn(d, "poi/1", Place.OTHER)
+        assertTrue(d.knownPlaces.isEmpty())
+    }
+
+    @Test
+    fun only_the_most_recent_destinations_are_kept() {
+        var d = AppData.EMPTY
+        for (i in 0 until Arrivals.MAX_PLACES + 5) d = Arrivals.learn(d, "poi/$i", Place.HOME)
+        assertEquals(Arrivals.MAX_PLACES, d.knownPlaces.size)
+        assertNull(d.knownPlaces["poi/0"])
+        assertNotNull(d.knownPlaces["poi/${Arrivals.MAX_PLACES + 4}"])
+    }
 }

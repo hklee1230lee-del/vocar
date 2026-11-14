@@ -33,6 +33,7 @@ object Codec {
         root.put("attempts", JSONArray(data.attempts.map(::attempt)))
         root.put("sessions", JSONArray(data.sessions.map(::session)))
         root.put("arrivals", JSONArray(data.arrivals.map(::arrival)))
+        root.put("knownPlaces", JSONObject().also { o -> data.knownPlaces.forEach { (poi, place) -> o.put(poi, place.name) } })
         root.put("difficulty", data.difficulty)
         root.put("gradedSinceAdjust", data.gradedSinceAdjust)
         return root.toString()
@@ -49,6 +50,11 @@ object Codec {
             difficulty = root.optInt("difficulty", 0),
             gradedSinceAdjust = root.optInt("gradedSinceAdjust", 0),
             arrivals = list(root.optJSONArray("arrivals"), ::readArrival),
+            knownPlaces = root.optJSONObject("knownPlaces")?.let { o ->
+                o.keys().asSequence().mapNotNull { poi ->
+                    Place.entries.firstOrNull { it.name == o.optString(poi) }?.let { poi to it }
+                }.toMap()
+            } ?: emptyMap(),
         )
     }
 

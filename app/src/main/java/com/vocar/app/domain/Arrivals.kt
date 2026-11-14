@@ -19,6 +19,9 @@ object Arrivals {
     /** 내비 도착과 기어 도착은 같은 주행의 두 신호다. 이 시간 안에 서로 다른 신호가 오면 하나로 합친다. */
     const val MERGE_MS = 20 * 60_000L
 
+    /** 기억해 두는 목적지 수. 오래된 것부터 잊는다. */
+    const val MAX_PLACES = 20
+
     /** 도착 뒤 이 시간 안에만 "방금 도착"으로 안내한다. */
     const val PENDING_MS = 45 * 60_000L
     private const val SHORT_TRIP_KM = 1.0f
@@ -43,6 +46,12 @@ object Arrivals {
         "집", "우리집", "내집", "home" -> Place.HOME
         "회사", "우리회사", "직장", "사무실", "office", "work" -> Place.WORK
         else -> null
+    }
+
+    /** 사용자가 확인한 목적지를 기억한다. 출퇴근이 아니라고 하면 잊는다. */
+    fun learn(data: AppData, poi: String, place: Place): AppData {
+        val next = if (place == Place.OTHER) data.knownPlaces - poi else data.knownPlaces - poi + (poi to place)
+        return data.copy(knownPlaces = next.entries.toList().takeLast(MAX_PLACES).associate { it.key to it.value })
     }
 
     private fun median(values: List<Float>): Float? {
@@ -140,10 +149,12 @@ object Arrivals {
         approximate: Boolean,
         hint: Place? = null,
         viaNavi: Boolean = false,
+        hintLearned: Boolean = false,
     ): AppData {
         val last = data.arrivals.lastOrNull()
         val hinted = hint?.takeIf { it != Place.OTHER }?.let {
-            Guess(it, true, "내비 목적지가 ${if (it == Place.HOME) "집" else "회사"}로 저장돼 있어요")
+            val label = if (it == Place.HOME) "집" else "회사"
+            Guess(it, true, if (hintLearned) "전에 ${label}(으)로 확인한 목적지예요" else "내비 목적지가 ${label}로 저장돼 있어요")
         }
         if (last != null && !approximate && last.viaNavi != viaNavi && atMs - last.atMs in 0..MERGE_MS) {
             // 내비가 직접 준 주행 거리·시간이 주행거리 차이로 추정한 값보다 믿을 만하다.

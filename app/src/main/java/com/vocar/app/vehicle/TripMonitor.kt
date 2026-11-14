@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.vocar.app.BuildConfig
+import com.vocar.app.domain.Arrivals
 import com.vocar.app.domain.Place
 
 /** 주행이 끝난 시점 하나와 그때 차량이 알려준 값. */
@@ -28,6 +29,8 @@ data class TripEnd(
     val hint: Place? = null,
     /** 내비 목적지 도착 이벤트에서 온 도착 */
     val viaNavi: Boolean = false,
+    /** 내비 목적지 키(이름+주소의 해시). 앱이 사용자가 확인한 목적지와 대조하는 데만 쓴다. */
+    val poi: String? = null,
 )
 
 /**
@@ -46,7 +49,10 @@ class TripMonitor private constructor(context: Context) {
     private var retries = 0
     private var sink: ((TripEnd) -> Unit)? = null
     private val waiting = ArrayList<TripEnd>()
-    private val navi = NaviArrivals(context.applicationContext) { deliver(it) }
+    private val navi = NaviArrivals(context.applicationContext) { naviArrived(it) }
+    private var lastGear: VehicleGear? = null
+    private var pendingNavi: TripEnd? = null
+    private val expireNavi = Runnable { pendingNavi = null }
 
     private val gearListener = object : GearSelectionListener {
         override fun onSelected(gear: VehicleGear?) {
@@ -84,6 +90,8 @@ class TripMonitor private constructor(context: Context) {
                     "D" -> onGear(VehicleGear.GEAR_DRIVE)
                     "P" -> if (drove && intent.hasExtra("trip_km")) {
                         drove = false
+                        lastGear = VehicleGear.GEAR_PARK
+                        releaseNavi()
                         deliver(TripEnd(
                             System.currentTimeMillis(),
                             if (intent.hasExtra("odo_km")) intent.getFloatExtra("odo_km", 0f) else null,
@@ -100,11 +108,13 @@ class TripMonitor private constructor(context: Context) {
         // adb(shell)에서 보내려면 외부 수신이 필요하다. debug 빌드에서만 등록한다.
         context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
         // 내비 도착도 같은 방식으로 흉내 낸다(NaviArrivals.arrived로 SDK 이벤트와 같은 곳에 들어간다).
-        //   adb shell am broadcast -a com.vocar.app.DEBUG_NAVI --es dest 회사 --ef km 12.4 --ei minutes 25
+        //   adb shell am broadcast -a com.vocar.app.DEBUG_NAVI --es dest 더현대서울 --es addr "서울특별시 영등포구 여의대로 108" --ef km 12.4 --ei minutes 25
+        // 주행 중(D)에 보내면 P가 될 때까지 기다린다.
         context.registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(c: Context, intent: Intent) {
                 navi.arrived(
                     intent.getStringExtra("dest"),
+                    intent.getStringExtra("addr"),
                     intent.getFloatExtra("km", 0f) * 1000.0,
                     intent.getIntExtra("minutes", 0) * 60.0,
                 )
@@ -128,13 +138,39 @@ class TripMonitor private constructor(context: Context) {
 
     private fun onGear(gear: VehicleGear?) {
         if (gear == null || gear == VehicleGear.GEAR_UNKNOWN) return
+        lastGear = gear
         if (gear != VehicleGear.GEAR_PARK) {
             if (!drove) Log.i(TAG, "trip: 주행 시작 ($gear)")
             drove = true
-        } else if (drove) {
-            drove = false
-            read(approximate = false)
+        } else {
+            releaseNavi()
+            if (drove) {
+                drove = false
+                read(approximate = false)
+            }
         }
+    }
+
+    /**
+     * 내비 도착은 기어가 P가 될 때까지 기다렸다가 확정한다(주행 중 도착 알림만으로 기록하지 않는다).
+     * 이미 P이면 바로 넘기고, 20분 안에 P가 되지 않으면 버린다. 기어 도착과는 Arrivals.record가 한 건으로 합친다.
+     */
+    private fun naviArrived(trip: TripEnd) {
+        if (lastGear == VehicleGear.GEAR_PARK && !drove) {
+            deliver(trip)
+            return
+        }
+        pendingNavi = trip
+        handler.removeCallbacks(expireNavi)
+        handler.postDelayed(expireNavi, Arrivals.MERGE_MS)
+        Log.i(TAG, "navi: 도착 알림을 받았고 P가 되면 확정합니다")
+    }
+
+    private fun releaseNavi() {
+        val trip = pendingNavi ?: return
+        pendingNavi = null
+        handler.removeCallbacks(expireNavi)
+        deliver(trip)
     }
 
     /** 주차가 확인됐을 때 호출한다. 그 사이 놓친 주행이 있었는지 누적 주행거리로 확인한다. */

@@ -29,6 +29,7 @@ class CodecTest {
         data = Arrivals.record(data, "a1", 8_640_000_000L, 100, 520, 1012.4f, 12.3f, 25, false)
         data = Arrivals.confirmFromSession(data, Mode.MORNING, 8_640_060_000L)
         data = Arrivals.record(data, "a2", 8_680_000_000L, 100, 1130, null, null, null, false, hint = Place.HOME, viaNavi = true)
+        data = Arrivals.learn(data, "NAVER/123/", Place.WORK)
         return Engine.toggleFavorite(data, "w1d1")
     }
 

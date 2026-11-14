@@ -164,6 +164,8 @@ data class AppData(
     val gradedSinceAdjust: Int,
     /** 주행이 끝난 시점(도착) 기록. 차량 신호로 자동으로 쌓인다. */
     val arrivals: List<Arrival> = emptyList(),
+    /** 사용자가 집/회사로 확인한 내비 목적지의 키(이름+주소의 해시)와 그 값. 이름·주소·좌표는 저장하지 않는다. */
+    val knownPlaces: Map<String, Place> = emptyMap(),
 ) {
     companion object {
         val EMPTY = AppData(Settings.DEFAULT, emptyMap(), emptyList(), emptyList(), 0, 0)
