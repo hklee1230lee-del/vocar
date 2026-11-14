@@ -8,7 +8,7 @@
 | --- | --- |
 | 대상 | Pleos Connect v2.1.0 (API 34), Vehicle SDK 2.3.2, Pleos TTS 3.3.1 |
 | 패키지 | `com.vocar.app` |
-| 안전 | 기어 P + 주행 제한 없음일 때만 학습·음원 재생. 권한은 읽기용 `CAR_DRIVE`와 `TTS_SERVICE`·`STT_SERVICE` |
+| 안전 | 기어 P + 주행 제한 없음일 때만 학습·음원 재생. 권한은 읽기용 `CAR_DRIVE`·`NAVI_ROUTE`와 `TTS_SERVICE`·`STT_SERVICE` |
 | 오프라인 | 학습 묶음 20개가 앱에 포함. 네트워크 권한을 쓰지 않음 |
 | 실행 | [빌드와 실행](#빌드와-실행) · 코드는 [코드 구조](#코드-구조) |
 | APK | 저장소의 Releases 최신 릴리스(디버그 서명) |
@@ -34,12 +34,13 @@
 
 ## 출근·퇴근이 끝난 시점을 아는 방법
 
-Vehicle SDK 2.3.2의 읽기 API만 씁니다(권한은 `pleos.car.permission.CAR_DRIVE` 하나, 위치·내비 목적지는 쓰지 않음).
+Vehicle SDK 2.3.2의 읽기 API(권한 `pleos.car.permission.CAR_DRIVE`)와, 내비게이션 도착 이벤트(NaviHelper 3.0.5, 권한 `pleos.car.permission.NAVI_ROUTE`)를 **병행**합니다. 위치(GPS)는 쓰지 않습니다.
 
 | 알아내는 것 | 쓰는 API | 비고 |
 | --- | --- | --- |
 | 주행이 끝난 시각 | `Gear.registerGearSelection` — P가 아닌 기어 뒤에 P가 되는 순간 | 콜백 방식. 앱이 화면에 없어도 프로세스가 살아 있으면 받음 |
 | 놓친 주행 보완 | `Odometer.getCurrentDistanceDriven` (누적 km) | 앱이 주차 상태로 열릴 때 읽어, 지난 기록보다 0.3km 이상 늘었으면 도착으로 기록(시각은 앱을 연 시각) |
+| 내비 목적지 도착 | `NaviHelper.onDestinationArrived` | 내비 안내를 켠 주행에서만 옴. 이벤트의 주행 거리·시간을 쓰고, 목적지 이름이 `집`·`회사` 등과 정확히 같으면 그 값으로 확정 안내("내비 목적지가 회사로 저장돼 있어요"). 이름·주소·좌표는 저장하지 않음 |
 | 이번 주행 거리·시간 | `Odometer.getTripCurrentDrivingDistance` (m), `getTripCurrentDrivingTime` (분) | 없으면 누적 거리 차이로 대신 |
 
 출근인지 퇴근인지는 `domain/Arrivals.kt`의 규칙으로 가립니다.
@@ -51,8 +52,10 @@ Vehicle SDK 2.3.2의 읽기 API만 씁니다(권한은 `pleos.car.permission.CAR
 도착 뒤 45분 안에 사용자가 출근/퇴근 학습을 시작하면(또는 안내에서 바로잡으면) 그 값이 정답으로 저장되어 다음 추정에 쓰입니다.
 거리와 순서·시간이 모두 맞으면 "도착했어요", 아니면 "도착한 것 같아요(추정)"로 표시합니다. 좌표나 주소는 저장하지 않습니다.
 
-한계: 프로세스가 꺼져 있던 사이의 주행은 정확한 도착 시각을 알 수 없습니다(앱을 연 시각으로 기록).
-NaviHelper의 목적지 도착 이벤트나 FusedLocation을 쓰면 더 정확하지만, 별도 SDK·권한 승인과 내비 탑재 차량이 필요해 넣지 않았습니다.
+내비 도착과 기어 도착은 같은 주행의 두 신호라서, 20분 안에 서로 다른 신호가 오면 도착 한 건으로 합칩니다. 합칠 때는 내비가 준 주행 거리·시간을 우선합니다. 권한을 거부하거나 내비를 쓰지 않으면 기어·주행거리 방식만으로 동작합니다.
+
+한계: 프로세스가 꺼져 있던 사이의 주행은 정확한 도착 시각을 알 수 없습니다(앱을 연 시각으로 기록). 내비 이벤트도 앱 프로세스가 살아 있을 때만 받습니다. 이벤트의 거리 단위(m)와 시간 단위(초)는 SDK 문서로 확인하지 못해 가정한 값이며, 말이 안 되는 값은 버립니다.
+FusedLocation(위치)은 쓰지 않습니다.
 기어 조회 API는 SDK에서 deprecated(구글 `GEAR_SELECTION` 속성 권장)로 표시되어 있습니다.
 
 ## 빌드와 실행
@@ -83,6 +86,12 @@ adb shell am broadcast -a com.vocar.app.DEBUG_GEAR --es gear D
 adb shell am broadcast -a com.vocar.app.DEBUG_GEAR --es gear P --ef trip_km 12.4 --ei minutes 25 --ef odo_km 15000
 ```
 
+내비 도착도 흉내 낼 수 있습니다(`dest`가 `집`·`회사` 등 저장 이름과 정확히 같으면 확정 안내).
+
+```powershell
+adb shell am broadcast -a com.vocar.app.DEBUG_NAVI --es dest 회사 --ef km 12.4 --ei minutes 25
+```
+
 `P`에 `trip_km`를 주면 SDK 값(에뮬레이터에서는 비어 있음) 대신 그 값으로 도착을 기록합니다. 차량 SDK가 값을 주는 경로는 이 방법으로 검증되지 않습니다.
 
 기어를 바꿔 주행 제한을 확인하려면 `adb forward tcp:8088 tcp:8088` 뒤 http://localhost:8088/ (Virtual Console)에서 P ↔ D를 바꿉니다.
@@ -98,6 +107,7 @@ app/src/main/java/com/vocar/app/
   data/Codec.kt, Store.kt  JSON 저장 형식, 임시 파일 → 이름 바꾸기 저장
   vehicle/ParkingGate.kt   CarUxRestrictions + 기어 P 확인 (주차 전용 게이트)
   vehicle/TripMonitor.kt   기어·주행거리로 주행이 끝난 시점 감지
+  vehicle/NaviArrivals.kt  내비 목적지 도착 이벤트로 도착 감지(NaviHelper, 기어 도착과 병행)
   domain/Arrivals.kt       도착 기록, 출근/퇴근 추정 규칙
   audio/Speaker.kt         TTS 재생(Pleos TTS → 기기 TTS), 오디오 포커스 요청·상실 처리
   ui/AppController.kt      화면 상태, 저장 시점, 일시정지·재개
@@ -115,4 +125,4 @@ app/src/test/              EngineTest(학습 규칙), ArrivalsTest(도착 추정
 - 끝내기는 어느 단계에서나 한 번. 확인창 없음. 완료 후 다음 학습을 자동으로 시작하지 않음.
 - 화면을 벗어나거나, 주차가 풀리거나, 다른 소리에 밀리면 멈추고, 돌아와도 사용자가 눌러야 이어감.
 - 자가 확인(떠올렸어요)은 연습으로만 기록하고 "회상 확인"으로 세지 않음.
-- 권한은 읽기용 `pleos.car.permission.CAR_DRIVE`와 `TTS_SERVICE`·`STT_SERVICE`. 위치·네트워크 권한 없음. 마이크는 STT를 쓰는 말하기 단계에서만.
+- 권한은 읽기용 `pleos.car.permission.CAR_DRIVE`·`NAVI_ROUTE`와 `TTS_SERVICE`·`STT_SERVICE`. 위치·네트워크 권한 없음. 마이크는 STT를 쓰는 말하기 단계에서만.

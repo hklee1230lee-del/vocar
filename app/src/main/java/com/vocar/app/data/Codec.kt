@@ -195,6 +195,7 @@ object Codec {
             .put("sure", a.sure)
             .put("reason", a.reason)
             .put("approximate", a.approximate)
+            .put("viaNavi", a.viaNavi)
         if (a.odometerKm != null) o.put("odometerKm", a.odometerKm.toDouble())
         if (a.tripKm != null) o.put("tripKm", a.tripKm.toDouble())
         if (a.tripMinutes != null) o.put("tripMinutes", a.tripMinutes)
@@ -215,6 +216,7 @@ object Codec {
         reason = o.optString("reason"),
         confirmed = if (o.has("confirmed")) Place.valueOf(o.getString("confirmed")) else null,
         approximate = o.optBoolean("approximate", false),
+        viaNavi = o.optBoolean("viaNavi", false),
     )
 
     private fun enumOr(name: String, fallback: Goal): Goal = Goal.entries.firstOrNull { it.name == name } ?: fallback

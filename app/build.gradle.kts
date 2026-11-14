@@ -39,6 +39,7 @@ android {
 
 dependencies {
     implementation(libs.pleos.vehicle)
+    implementation(libs.pleos.navi)
     implementation(libs.pleos.tts)
     implementation(libs.pleos.stt)
     implementation(platform(libs.androidx.compose.bom))

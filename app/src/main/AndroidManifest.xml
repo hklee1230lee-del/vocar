@@ -4,6 +4,9 @@
     <!-- 기어 P 확인(읽기 전용). 차량을 제어하는 CONTROL_CAR_* 권한은 쓰지 않는다. -->
     <uses-permission android:name="pleos.car.permission.CAR_DRIVE" />
 
+    <!-- 내비 목적지 도착 이벤트(읽기). 내비를 쓰지 않으면 거부해도 앱은 기어 방식으로 동작한다. -->
+    <uses-permission android:name="pleos.car.permission.NAVI_ROUTE" />
+
     <!-- Pleos TTS(영어 음원 재생)와 STT(마이크 버튼을 눌렀을 때만 인식) -->
     <uses-permission android:name="pleos.car.permission.TTS_SERVICE" />
     <uses-permission android:name="pleos.car.permission.STT_SERVICE" />

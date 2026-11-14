@@ -16,6 +16,9 @@ object Arrivals {
     const val SAME_STOP_KM = 0.3f
     const val SAME_STOP_MS = 5 * 60_000L
 
+    /** 내비 도착과 기어 도착은 같은 주행의 두 신호다. 이 시간 안에 서로 다른 신호가 오면 하나로 합친다. */
+    const val MERGE_MS = 20 * 60_000L
+
     /** 도착 뒤 이 시간 안에만 "방금 도착"으로 안내한다. */
     const val PENDING_MS = 45 * 60_000L
     private const val SHORT_TRIP_KM = 1.0f
@@ -30,6 +33,16 @@ object Arrivals {
         Place.WORK -> Mode.MORNING
         Place.HOME -> Mode.EVENING
         Place.OTHER -> null
+    }
+
+    /**
+     * 내비 목적지 이름이 집·회사로 저장된 이름과 정확히 같을 때만 알아본다.
+     * "집밥", "돼지집"처럼 이름에 글자가 들어 있을 뿐인 장소는 건드리지 않는다. 주소·좌표는 쓰지도 저장하지도 않는다.
+     */
+    fun placeFromName(name: String?): Place? = when (name?.filterNot { it.isWhitespace() }?.lowercase()) {
+        "집", "우리집", "내집", "home" -> Place.HOME
+        "회사", "우리회사", "직장", "사무실", "office", "work" -> Place.WORK
+        else -> null
     }
 
     private fun median(values: List<Float>): Float? {
@@ -125,8 +138,27 @@ object Arrivals {
         tripKm: Float?,
         tripMinutes: Int?,
         approximate: Boolean,
+        hint: Place? = null,
+        viaNavi: Boolean = false,
     ): AppData {
         val last = data.arrivals.lastOrNull()
+        val hinted = hint?.takeIf { it != Place.OTHER }?.let {
+            Guess(it, true, "내비 목적지가 ${if (it == Place.HOME) "집" else "회사"}로 저장돼 있어요")
+        }
+        if (last != null && !approximate && last.viaNavi != viaNavi && atMs - last.atMs in 0..MERGE_MS) {
+            // 내비가 직접 준 주행 거리·시간이 주행거리 차이로 추정한 값보다 믿을 만하다.
+            val trip = tripKm?.takeIf { it > 0.05f }
+            val merged = last.copy(
+                odometerKm = last.odometerKm ?: odometerKm,
+                tripKm = if (viaNavi) trip ?: last.tripKm else last.tripKm ?: trip,
+                tripMinutes = if (viaNavi) tripMinutes ?: last.tripMinutes else last.tripMinutes ?: tripMinutes,
+                approximate = false,
+                viaNavi = true,
+            )
+            val better = if (hinted != null && last.confirmed == null)
+                merged.copy(guess = hinted.place, sure = true, reason = hinted.reason) else merged
+            return data.copy(arrivals = data.arrivals.dropLast(1) + better)
+        }
         val moved = if (last?.odometerKm != null && odometerKm != null) abs(odometerKm - last.odometerKm) else null
         if (last != null) {
             if (approximate) {
@@ -140,10 +172,10 @@ object Arrivals {
         }
         // 이번 주행 거리: 트립 값이 없으면 지난 도착 이후 늘어난 누적 거리로 대신한다. 0은 "모름"으로 둔다.
         val distance = (tripKm?.takeIf { it > 0.05f } ?: moved)?.takeIf { it > 0.05f }
-        val guess = classify(data.arrivals, day, minuteOfDay, distance)
+        val guess = hinted ?: classify(data.arrivals, day, minuteOfDay, distance)
         val arrival = Arrival(
             id, atMs, day, minuteOfDay, odometerKm, distance, tripMinutes,
-            guess.place, guess.sure, guess.reason, null, approximate,
+            guess.place, guess.sure, guess.reason, null, approximate, viaNavi,
         )
         return data.copy(arrivals = (data.arrivals + arrival).takeLast(MAX))
     }

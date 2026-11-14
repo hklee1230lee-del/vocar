@@ -235,4 +235,6 @@ data class Arrival(
     val confirmed: Place?,
     /** 기어 변화를 직접 보지 못하고, 앱을 열었을 때 주행거리 변화로 알아챈 도착 */
     val approximate: Boolean,
+    /** 내비 목적지 도착 이벤트로 알아챈 도착(기어 도착과 합쳐졌을 수 있다) */
+    val viaNavi: Boolean = false,
 )

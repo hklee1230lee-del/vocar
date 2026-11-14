@@ -273,7 +273,6 @@ class AppController(
     /** 주행이 끝난 시점을 기록하고, 출근/퇴근 추정에 맞춰 오늘 할 학습을 바꿔 제안한다. */
     fun onTripEnd(trip: TripEnd) {
         val local = Instant.ofEpochMilli(trip.atMs).atZone(ZoneId.systemDefault())
-        val before = data.arrivals.size
         val next = Arrivals.record(
             data,
             id = "a" + trip.atMs.toString(36),
@@ -284,8 +283,10 @@ class AppController(
             tripKm = trip.tripKm,
             tripMinutes = trip.tripMinutes,
             approximate = trip.approximate,
+            hint = trip.hint,
+            viaNavi = trip.viaNavi,
         )
-        if (next.arrivals.size == before) return
+        if (next === data) return
         persist(next)
         refreshDay()
         if (screen == Screen.HOME && sessionId == null) mode = suggestedMode()

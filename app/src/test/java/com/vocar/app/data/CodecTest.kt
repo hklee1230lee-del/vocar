@@ -5,6 +5,7 @@ import com.vocar.app.domain.Arrivals
 import com.vocar.app.domain.Engine
 import com.vocar.app.domain.Goal
 import com.vocar.app.domain.Mode
+import com.vocar.app.domain.Place
 import com.vocar.app.domain.SessionLength
 import com.vocar.app.domain.Verdict
 import java.io.File
@@ -27,7 +28,7 @@ class CodecTest {
         data = Engine.finishEarly(data, "a", 2000)
         data = Arrivals.record(data, "a1", 8_640_000_000L, 100, 520, 1012.4f, 12.3f, 25, false)
         data = Arrivals.confirmFromSession(data, Mode.MORNING, 8_640_060_000L)
-        data = Arrivals.record(data, "a2", 8_680_000_000L, 100, 1130, null, null, null, false)
+        data = Arrivals.record(data, "a2", 8_680_000_000L, 100, 1130, null, null, null, false, hint = Place.HOME, viaNavi = true)
         return Engine.toggleFavorite(data, "w1d1")
     }
 

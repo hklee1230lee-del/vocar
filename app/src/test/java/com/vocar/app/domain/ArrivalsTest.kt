@@ -123,4 +123,72 @@ class ArrivalsTest {
         // 주행거리가 없어도 기어 변화로 본 도착은 기록한다.
         assertEquals(1, arrive(AppData.EMPTY, day, 9 * 60, null).arrivals.size)
     }
+
+    @Test
+    fun only_exact_saved_names_count_as_home_or_work() {
+        assertEquals(Place.HOME, Arrivals.placeFromName(" 우리 집 "))
+        assertEquals(Place.HOME, Arrivals.placeFromName("Home"))
+        assertEquals(Place.WORK, Arrivals.placeFromName("회사"))
+        assertEquals(Place.WORK, Arrivals.placeFromName("사무실"))
+        assertNull(Arrivals.placeFromName("집밥 식당"))
+        assertNull(Arrivals.placeFromName("돼지집"))
+        assertNull(Arrivals.placeFromName(null))
+    }
+
+    @Test
+    fun navi_destination_hint_makes_the_guess_sure_even_without_history() {
+        val d = Arrivals.record(AppData.EMPTY, "n1", ms(day, 13 * 60), day, 13 * 60, null, 12.4f, 25, false,
+            hint = Place.WORK, viaNavi = true)
+        val a = d.arrivals.single()
+        assertEquals(Place.WORK, a.guess)
+        assertTrue(a.sure)
+        assertTrue(a.viaNavi)
+        assertEquals(12.4f, a.tripKm!!, 0.01f)
+    }
+
+    @Test
+    fun navi_and_gear_arrivals_of_one_trip_merge_in_either_order() {
+        val gearSecond = Arrivals.record(AppData.EMPTY, "n1", ms(day, 520), day, 520, null, 12.4f, 25, false,
+            hint = Place.WORK, viaNavi = true)
+            .let { Arrivals.record(it, "g1", ms(day, 527), day, 527, 1012.4f, 12.3f, 24, false) }
+        assertEquals(1, gearSecond.arrivals.size)
+        assertEquals(1012.4f, gearSecond.arrivals[0].odometerKm!!, 0.01f)
+        assertEquals(12.4f, gearSecond.arrivals[0].tripKm!!, 0.01f)
+        assertEquals(Place.WORK, gearSecond.arrivals[0].guess)
+
+        val naviSecond = Arrivals.record(AppData.EMPTY, "g1", ms(day, 520), day, 520, 1012.4f, 12.3f, 24, false)
+            .let { Arrivals.record(it, "n1", ms(day, 524), day, 524, null, 12.4f, 25, false, hint = Place.HOME, viaNavi = true) }
+        assertEquals(1, naviSecond.arrivals.size)
+        assertEquals(Place.HOME, naviSecond.arrivals[0].guess)
+        assertTrue(naviSecond.arrivals[0].sure)
+        assertEquals(1012.4f, naviSecond.arrivals[0].odometerKm!!, 0.01f)
+    }
+
+    @Test
+    fun a_confirmed_arrival_is_not_overwritten_by_a_late_navi_hint() {
+        var d = Arrivals.record(AppData.EMPTY, "g1", ms(day, 520), day, 520, 1012.4f, 12.3f, 24, false)
+        d = Arrivals.confirm(d, "g1", Place.HOME)
+        d = Arrivals.record(d, "n1", ms(day, 524), day, 524, null, 12.4f, 25, false, hint = Place.WORK, viaNavi = true)
+        assertEquals(Place.HOME, Arrivals.placeOf(d.arrivals.single()))
+    }
+
+    @Test
+    fun arrivals_far_apart_in_time_stay_separate() {
+        val d = Arrivals.record(AppData.EMPTY, "n1", ms(day, 520), day, 520, null, 12.4f, 25, false, hint = Place.WORK, viaNavi = true)
+            .let { Arrivals.record(it, "g1", ms(day, 520 + 40), day, 560, 1030f, 12.0f, 24, false) }
+        assertEquals(2, d.arrivals.size)
+    }
+
+    @Test
+    fun navi_values_replace_a_guessed_distance_from_an_approximate_arrival() {
+        val d = Arrivals.record(AppData.EMPTY, "g0", ms(day, 520), day, 520, 15000f, null, null, true)
+            .let { Arrivals.record(it, "g1", ms(day + 1, 520), day + 1, 520, 0f, null, null, true) }
+        val last = d.arrivals.last()
+        assertEquals(15000f, last.tripKm!!, 0.01f)
+        val merged = Arrivals.record(d, "n1", last.atMs + 60_000, day + 1, 521, null, 12.4f, 25, false,
+            hint = Place.WORK, viaNavi = true).arrivals.last()
+        assertEquals(12.4f, merged.tripKm!!, 0.01f)
+        assertEquals(25, merged.tripMinutes)
+        assertFalse(merged.approximate)
+    }
 }

@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.vocar.app.BuildConfig
+import com.vocar.app.domain.Place
 
 /** 주행이 끝난 시점 하나와 그때 차량이 알려준 값. */
 data class TripEnd(
@@ -23,6 +24,10 @@ data class TripEnd(
     val tripMinutes: Int?,
     /** 기어 변화를 직접 본 것이 아니라, 주차 상태에서 값을 읽기만 한 경우 */
     val approximate: Boolean,
+    /** 내비 목적지가 집/회사로 알아본 값. 모르면 null */
+    val hint: Place? = null,
+    /** 내비 목적지 도착 이벤트에서 온 도착 */
+    val viaNavi: Boolean = false,
 )
 
 /**
@@ -41,6 +46,7 @@ class TripMonitor private constructor(context: Context) {
     private var retries = 0
     private var sink: ((TripEnd) -> Unit)? = null
     private val waiting = ArrayList<TripEnd>()
+    private val navi = NaviArrivals(context.applicationContext) { deliver(it) }
 
     private val gearListener = object : GearSelectionListener {
         override fun onSelected(gear: VehicleGear?) {
@@ -60,6 +66,7 @@ class TripMonitor private constructor(context: Context) {
         } catch (t: Throwable) {
             Log.w(TAG, "도착 감지를 시작하지 못했습니다: ${t.message}")
         }
+        navi.start()
         if (BuildConfig.DEBUG) registerDebugReceiver(context.applicationContext)
     }
 
@@ -92,6 +99,17 @@ class TripMonitor private constructor(context: Context) {
         val filter = IntentFilter("com.vocar.app.DEBUG_GEAR")
         // adb(shell)에서 보내려면 외부 수신이 필요하다. debug 빌드에서만 등록한다.
         context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
+        // 내비 도착도 같은 방식으로 흉내 낸다(NaviArrivals.arrived로 SDK 이벤트와 같은 곳에 들어간다).
+        //   adb shell am broadcast -a com.vocar.app.DEBUG_NAVI --es dest 회사 --ef km 12.4 --ei minutes 25
+        context.registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(c: Context, intent: Intent) {
+                navi.arrived(
+                    intent.getStringExtra("dest"),
+                    intent.getFloatExtra("km", 0f) * 1000.0,
+                    intent.getIntExtra("minutes", 0) * 60.0,
+                )
+            }
+        }, IntentFilter("com.vocar.app.DEBUG_NAVI"), Context.RECEIVER_EXPORTED)
         Log.i(TAG, "debug: DEBUG_GEAR 수신 대기")
     }
 
