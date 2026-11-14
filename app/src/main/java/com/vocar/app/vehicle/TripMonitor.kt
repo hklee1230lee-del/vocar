@@ -3,10 +3,14 @@ package com.vocar.app.vehicle
 import ai.pleos.playground.vehicle.Vehicle
 import ai.pleos.playground.vehicle.constant.control.VehicleGear
 import ai.pleos.playground.vehicle.listener.GearSelectionListener
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.vocar.app.BuildConfig
 
 /** 주행이 끝난 시점 하나와 그때 차량이 알려준 값. */
 data class TripEnd(
@@ -56,6 +60,39 @@ class TripMonitor private constructor(context: Context) {
         } catch (t: Throwable) {
             Log.w(TAG, "도착 감지를 시작하지 못했습니다: ${t.message}")
         }
+        if (BuildConfig.DEBUG) registerDebugReceiver(context.applicationContext)
+    }
+
+    /**
+     * debug 빌드 전용. 에뮬레이터에 차량(DDS) 연결이 없어 기어를 바꿀 수 없을 때 기어 변화를 흉내 낸다.
+     * 실제 기어 콜백과 같은 onGear()로 들어가므로 도착 기록·카드 흐름은 그대로 탄다. release에서는 호출되지 않는다.
+     *   adb shell am broadcast -a com.vocar.app.DEBUG_GEAR --es gear D
+     *   adb shell am broadcast -a com.vocar.app.DEBUG_GEAR --es gear P [--ef trip_km 12.4 --ei minutes 25 --ef odo_km 15000]
+     * P에 trip_km를 주면 SDK를 읽지 않고 그 값으로 도착을 기록한다(SDK 값은 에뮬레이터에서 비어 있다).
+     */
+    private fun registerDebugReceiver(context: Context) {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(c: Context, intent: Intent) {
+                when (intent.getStringExtra("gear")?.uppercase()) {
+                    "D" -> onGear(VehicleGear.GEAR_DRIVE)
+                    "P" -> if (drove && intent.hasExtra("trip_km")) {
+                        drove = false
+                        deliver(TripEnd(
+                            System.currentTimeMillis(),
+                            if (intent.hasExtra("odo_km")) intent.getFloatExtra("odo_km", 0f) else null,
+                            intent.getFloatExtra("trip_km", 0f),
+                            if (intent.hasExtra("minutes")) intent.getIntExtra("minutes", 0) else null,
+                            approximate = false,
+                        ))
+                    } else onGear(VehicleGear.GEAR_PARK)
+                    else -> Log.w(TAG, "debug: gear는 D 또는 P")
+                }
+            }
+        }
+        val filter = IntentFilter("com.vocar.app.DEBUG_GEAR")
+        // adb(shell)에서 보내려면 외부 수신이 필요하다. debug 빌드에서만 등록한다.
+        context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
+        Log.i(TAG, "debug: DEBUG_GEAR 수신 대기")
     }
 
     private fun subscribeLater() {

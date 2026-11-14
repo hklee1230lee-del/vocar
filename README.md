@@ -76,6 +76,15 @@ sdk.dir=C\:\\Users\\<이름>\\AppData\\Local\\Android\\Sdk
 java.home=C\:\\Program Files\\Android\\Android Studio\\jbr
 ```
 
+에뮬레이터에 차량(DDS) 연결이 없어 콘솔이 `emulator_inactive`를 돌려줄 때는, debug 빌드에서 기어 변화를 흉내 낼 수 있습니다. 실제 기어 콜백과 같은 경로(`TripMonitor.onGear`)로 들어가 도착 기록과 카드가 그대로 동작합니다. release 빌드에는 등록되지 않습니다.
+
+```powershell
+adb shell am broadcast -a com.vocar.app.DEBUG_GEAR --es gear D
+adb shell am broadcast -a com.vocar.app.DEBUG_GEAR --es gear P --ef trip_km 12.4 --ei minutes 25 --ef odo_km 15000
+```
+
+`P`에 `trip_km`를 주면 SDK 값(에뮬레이터에서는 비어 있음) 대신 그 값으로 도착을 기록합니다. 차량 SDK가 값을 주는 경로는 이 방법으로 검증되지 않습니다.
+
 기어를 바꿔 주행 제한을 확인하려면 `adb forward tcp:8088 tcp:8088` 뒤 http://localhost:8088/ (Virtual Console)에서 P ↔ D를 바꿉니다.
 
 ## 코드 구조
