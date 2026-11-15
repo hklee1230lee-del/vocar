@@ -1,17 +1,18 @@
 # VOCAR
 
-> 주차 후, 내리기 전 1~3분. 오늘 쓸 영어 표현 하나를 듣고, 말해 보고, 다시 떠올리는 Pleos Connect 차량용 학습 앱.
+> 주차 후, 내리기 전 1~3분. 오늘 쓸 외국어 표현 하나를 듣고, 말해 보고, 다시 떠올리는 Pleos Connect 차량용 학습 앱.
 
-기획안 `pleos_language_learning_plan.md` v1.0의 MVP 범위를 Kotlin / Jetpack Compose로 구현했습니다.
+현대자동차그룹 차량용 앱 개발 공모전 출품작(팀 어울수레). Kotlin / Jetpack Compose로 구현했습니다.
 
 | | |
 | --- | --- |
-| 대상 | Pleos Connect v2.1.0 (API 34), Vehicle SDK 2.3.2, Pleos TTS 3.3.1 |
+| 대상 | Pleos Connect v2.1.0 (API 34), Vehicle SDK 2.3.2, NaviHelper 3.0.5, Pleos TTS·STT 3.3.1 |
 | 패키지 | `com.vocar.app` |
 | 안전 | 기어 P + 주행 제한 없음일 때만 학습·음원 재생. 권한은 읽기용 `CAR_DRIVE`·`NAVI_ROUTE`와 `TTS_SERVICE`·`STT_SERVICE` |
-| 오프라인 | 학습 묶음 20개가 앱에 포함. 네트워크 권한을 쓰지 않음 |
+| 오프라인 | 영어 20개 + 일본어·중국어·스페인어 각 15개 학습 묶음과 경제 상식 퀴즈가 앱에 포함. 네트워크 권한을 쓰지 않음 |
+| 테스트 환경 | Pleos Connect 에뮬레이터(2560×1440). 기어는 Virtual Console에서 P로 둔다([빌드와 실행](#빌드와-실행)) |
 | 실행 | [빌드와 실행](#빌드와-실행) · 코드는 [코드 구조](#코드-구조) |
-| APK | 저장소의 Releases 최신 릴리스(디버그 서명) |
+| APK | 저장소의 Releases 최신 릴리스 `vocar-debug.apk`(디버그 서명). `adb install -r vocar-debug.apk` |
 
 ## 무엇이 들어 있나
 
@@ -21,7 +22,9 @@
 | FR-02 출근·퇴근 | 사용자가 직접 선택(위치 권한 없음). 한 모드만 써도 완결 |
 | FR-03 1분·3분 | 활동 2개 / 4개. 카운트다운·시간 초과 오답 없음 |
 | FR-04 듣기·선택·회상 | 20개 묶음 × (듣고 뜻 고르기, 상황 고르기, 떠올리기, 회상 확인, 변형 2종) |
-| FR-05 말하기 연습 | 마이크 없이 따라 말하고 "말해 봤어요"로 기록(연습 참여) |
+| FR-05 말하기 연습 | "마이크로 말하기"를 누를 때만 Pleos STT로 한 번 듣고, 정답 문장과 같으면 연습으로 기록. 마이크 없이 "말해 봤어요"로도 기록 가능 |
+| FR-06 다국어 | 설정에서 학습 언어 선택: 영어, 일본어, 중국어(간체), 스페인어. TTS·STT 언어도 함께 바뀜 |
+| 경제 상식 탭 | 하루 3문제 퀴즈 + 심화 퀴즈 팩, 경제 사전(개념·쉬운 설명·그림), 레벨·배지 도감. 문제 풀기는 주차 중에만. 연속 기록과 연속 보호권은 이 탭에만 있으며, 보호권 "구매"는 결제 연동 없는 시연용 |
 | FR-07 복습 추천 | 다음 학습일 → 1·3·7·14일 간격, 세션당 최대 2개, 힌트·오답·자가 확인 구분 |
 | FR-08 오프라인 | 20개 묶음 전체가 앱에 포함. 네트워크를 쓰지 않음 |
 | FR-09 저장·복구 | 활동을 확정할 때마다 저장. 강제 종료 후에도 중복 없이 이어하기 |
@@ -30,7 +33,7 @@
 | FR-12 기록 관리 | 이 차량에만 저장, 설정에서 모두 지우기 |
 | 도착 감지 | 주행이 끝난 시점을 기록하고 출근/퇴근을 추정해 오늘 학습을 바꿔 제안 (아래 참고) |
 
-아직 넣지 않은 것: 음성 인식(STT) 평가(FR-06), 검수 음원 파일(지금은 Pleos TTS, 초기화가 안 되면 기기 TTS), 분석 이벤트 전송(FR-13), 계정·동기화, Gleo 연동.
+아직 넣지 않은 것: STT 기반 발음 점수, 실제 결제 연동, 검수 음원 파일(지금은 Pleos TTS, 초기화가 안 되면 기기 TTS), 분석 이벤트 전송(FR-13), 계정·동기화, Gleo 연동.
 
 ## 출근·퇴근이 끝난 시점을 아는 방법
 
@@ -102,7 +105,12 @@ adb shell am broadcast -a com.vocar.app.DEBUG_NAVI --es dest 더현대서울 --e
 app/src/main/java/com/vocar/app/
   MainActivity.kt          화면 표시/이탈에 맞춰 게이트·음원을 켜고 끈다
   domain/Models.kt         묶음, 세션, 시도, 숙련 상태
-  domain/Content.kt        4주 · 20개 학습 묶음 (CONTENT_VERSION)
+  domain/Content.kt        4주 · 20개 영어 학습 묶음 (CONTENT_VERSION)
+  domain/SentenceContent.kt 일본어·중국어·스페인어 문장 학습 묶음, 학습 언어 목록
+  domain/EconQuiz.kt, Dictionary.kt  경제 상식 퀴즈·배지·사전 (data/EconStore.kt에 저장)
+  audio/Mic.kt             말하기 단계의 Pleos STT(버튼을 누를 때만 인식)
+  ui/EconScreens.kt        경제 상식 탭
+  words/LanguageActivity.kt 학습 언어 선택
   domain/Engine.kt         추천, 세션 구성, 채점 반영, 복습 간격, 난이도, 주간 기록 — 순수 함수
   data/Codec.kt, Store.kt  JSON 저장 형식, 임시 파일 → 이름 바꾸기 저장
   vehicle/ParkingGate.kt   CarUxRestrictions + 기어 P 확인 (주차 전용 게이트)
@@ -114,14 +122,14 @@ app/src/main/java/com/vocar/app/
   ui/Kit.kt                색·글자·버튼 등 공통 요소
   ui/HomeScreens.kt        첫 안내, 오늘, 표현 보관함, 내 기록, 설정
   ui/LessonScreens.kt      문제, 말하기, 피드백, 일시정지, 완료
-app/src/test/              EngineTest(학습 규칙), ArrivalsTest(도착 추정), CodecTest(저장·복구)
+app/src/test/              EngineTest(학습 규칙), ArrivalsTest(도착 추정), CodecTest(저장·복구), EconQuizTest·DictionaryTest(경제 상식)
 ```
 
 학습 규칙을 바꿀 때는 `Engine.kt`와 `EngineTest.kt`만 보면 됩니다. 문항을 고치면 `Content.CONTENT_VERSION`을 올립니다.
 
 ## 동작 원칙 (기획안에서 그대로 가져온 것)
 
-- 하루 한 번의 유효 학습이면 그날 목표 달성. 연속 기록·순위·생명·광고 없음.
+- 하루 한 번의 유효 학습이면 그날 목표 달성. 어학 학습에는 연속 기록·순위·생명·광고 없음(연속 기록은 경제 상식 탭에만).
 - 끝내기는 어느 단계에서나 한 번. 확인창 없음. 완료 후 다음 학습을 자동으로 시작하지 않음.
 - 화면을 벗어나거나, 주차가 풀리거나, 다른 소리에 밀리면 멈추고, 돌아와도 사용자가 눌러야 이어감.
 - 자가 확인(떠올렸어요)은 연습으로만 기록하고 "회상 확인"으로 세지 않음.
