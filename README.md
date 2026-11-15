@@ -1,18 +1,19 @@
-# VOCAR
+# VOCAR (보카)
 
-> 주차 후, 내리기 전 1~3분. 오늘 쓸 외국어 표현 하나를 듣고, 말해 보고, 다시 떠올리는 Pleos Connect 차량용 학습 앱.
+> 주차 후 1~3분 동안 외국어 표현을 연습하고 경제 퀴즈를 풀 수 있는 Pleos Connect 차량용 학습 앱입니다.
 
 현대자동차그룹 차량용 앱 개발 공모전 출품작(팀 어울수레). Kotlin / Jetpack Compose로 구현했습니다.
 
-| | |
+| 항목 | 내용 |
 | --- | --- |
-| 대상 | Pleos Connect v2.1.0 (API 34), Vehicle SDK 2.3.2, NaviHelper 3.0.5, Pleos TTS·STT 3.3.1 |
+| 실행 방법 | Pleos 에뮬레이터를 켜고 저장소 루트에서 `adb install -r ".\apk\어울수레_VOCAR_release.apk"`를 실행한 뒤 런처에서 VOCAR를 엽니다. 소스에서 빌드하고 실행하려면 `.\run-on-emulator.bat`를 사용합니다. [빌드와 실행](#빌드와-실행) |
+| 테스트 환경 및 설정 | APK 설치에는 Android SDK Platform-Tools(`adb`)가 필요합니다. Virtual Console에서 기어를 P로 두고 주행 제한이 해제된 상태에서 테스트합니다. 소스 빌드에는 Android SDK Platform 37과 Gradle 데몬용 JDK 25를 사용합니다. |
+| 개발에 사용한 에뮬레이터 | Pleos Connect v2.1.0 (Android API 34), 2560 × 1440 px |
+| APK | [제출용 release APK](apk/어울수레_VOCAR_release.apk) · [새 아이콘 확인용 debug APK 릴리스](https://github.com/hklee1230lee-del/VOCAr/releases/tag/v1.0.1-icon) |
+| 연동 SDK | Vehicle 2.3.2, NaviHelper 3.0.5, Pleos TTS·STT 3.3.1 |
 | 패키지 | `com.vocar.app` |
 | 안전 | 기어 P + 주행 제한 없음일 때만 학습·음원 재생. 권한은 읽기용 `CAR_DRIVE`·`NAVI_ROUTE`와 `TTS_SERVICE`·`STT_SERVICE` |
 | 오프라인 | 영어 20개 + 일본어·중국어·스페인어 각 15개 학습 묶음과 경제 상식 퀴즈가 앱에 포함. 앱 자체는 네트워크 권한을 선언하지 않음(Pleos SDK 라이브러리가 INTERNET을 포함하고, TTS·STT는 HYBRID 모드) |
-| 테스트 환경 | Pleos Connect 에뮬레이터(2560×1440). 기어는 Virtual Console에서 P로 둔다([빌드와 실행](#빌드와-실행)) |
-| 실행 | [빌드와 실행](#빌드와-실행) · 코드는 [코드 구조](#코드-구조) |
-| APK | 저장소 `apk/어울수레_VOCAR_release.apk`(release, 자체 서명). `adb install -r 어울수레_VOCAR_release.apk` |
 
 ## 무엇이 들어 있나
 
